@@ -1,0 +1,39 @@
+spring:
+  # JPA Configuration for Development
+  jpa:
+    hibernate:
+      ddl-auto: update  # Auto-update schema in development
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
+  # Devtools Configuration
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+  web:
+    error:
+      include-stacktrace: always
+
+# Logging - More verbose in development
+logging:
+  level:
+    root: INFO
+    com.peterscode.ecommerce_management_system: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.data.redis: DEBUG
+    org.flywaydb: DEBUG
+
+# Server Configuration
+# Application Configuration
+app:
+  security:
+    # Less strict in development
+    max-login-attempts: 10

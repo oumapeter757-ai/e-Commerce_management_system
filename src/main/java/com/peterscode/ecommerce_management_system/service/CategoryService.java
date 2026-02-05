@@ -1,7 +1,7 @@
 package com.peterscode.ecommerce_management_system.service;
 
-import com.peterscode.ecommerce_management_system.model.dto.reponse.CategoryResponse;
-import com.peterscode.ecommerce_management_system.model.dto.reponse.PageResponse;
+import com.peterscode.ecommerce_management_system.model.dto.response.CategoryResponse;
+import com.peterscode.ecommerce_management_system.model.dto.response.PageResponse;
 import com.peterscode.ecommerce_management_system.model.dto.request.CategoryRequest;
 import org.springframework.data.domain.Pageable;
 

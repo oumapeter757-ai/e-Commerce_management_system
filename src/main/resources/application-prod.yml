@@ -1,0 +1,74 @@
+spring:
+  # Database Configuration - Use environment variables in production
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ecommerce_db}?allowPublicKeyRetrieval=true&useSSL=true&serverTimezone=UTC
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+
+  # Redis Configuration
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+  # JPA Configuration - Strict validation in production
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Never auto-update in production
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: false
+  web:
+    error:
+      include-stacktrace: never
+      include-message: never
+      include-binding-errors: never
+
+# Logging - Less verbose in production
+logging:
+  level:
+    root: WARN
+    com.peterscode.ecommerce_management_system: INFO
+    org.springframework.web: WARN
+    org.springframework.security: INFO
+    org.hibernate.SQL: WARN
+    org.flywaydb: INFO
+  file:
+    name: /var/log/ecommerce/ecommerce-app.log
+    max-size: 50MB
+    max-history: 90
+
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8080}
+  compression:
+    enabled: true
+    min-response-size: 1024
+
+# Application Configuration
+app:
+  jwt:
+    secret: ${JWT_SECRET}  # Must be provided via environment variable
+
+  security:
+    max-login-attempts: 3
+    account-lock-duration: 3600000  # 1 hour in production
+
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:https://yourdomain.com}
+
+# Actuator - Restricted in production
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never

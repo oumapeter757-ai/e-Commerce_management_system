@@ -1,1 +1,215 @@
-spring.application.name=ecommerce_management_system
+spring:
+  application:
+    name: ecommerce_management_system
+
+  # DATABASE CONFIGURATION - Local MySQL
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ecommerce_db}?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+    username: ${DB_USER:peter}
+    password: ${DB_PASSWORD:peter}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: EcommerceHikariPool
+
+  # FLYWAY CONFIGURATION
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    baseline-version: 0
+    validate-on-migrate: true
+
+  # REDIS CONFIGURATION - Local Redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ${REDIS_PASSWORD:}
+      timeout: 60000
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
+
+  # JPA / HIBERNATE
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+    show-sql: true
+    open-in-view: false
+
+  # CACHE CONFIGURATION
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000
+      cache-null-values: false
+      use-key-prefix: true
+      key-prefix: "ecommerce:"
+
+  # EMAIL CONFIGURATION
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:oumapeter757@gmail.com}
+    password: ${MAIL_PASSWORD:ppjz paxe qihv dlvk }
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 30000
+          timeout: 30000
+          writetimeout: 30000
+    default-encoding: UTF-8
+
+  # SERVLET CONFIGURATION
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  web:
+    error:
+      include-binding-errors: always
+      include-message: always
+      include-stacktrace: never
+
+# SERVER CONFIGURATION
+server:
+  forward-headers-strategy: framework
+  port: 8080
+  compression:
+    enabled: true
+
+# LOGGING CONFIGURATION
+logging:
+  level:
+    root: INFO
+    com.peterscode.ecommerce_management_system: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.flywaydb: INFO
+    org.springframework.data.redis: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/ecommerce-app.log
+    max-size: 10MB
+    max-history: 30
+
+# APPLICATION SPECIFIC CONFIGURATION
+app:
+  # JWT Configuration
+  jwt:
+    secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+    access-token-expiration: 3600000       # 1 hour
+    refresh-token-expiration: 604800000    # 7 days
+
+  # Security Configuration
+  security:
+    max-login-attempts: 5
+    account-lock-duration: 1800000         # 30 minutes
+    password-reset-token-expiration: 3600000  # 1 hour
+
+  # CORS Configuration
+  cors:
+    allowed-origins: http://localhost:3000,http://localhost:4200,https://*.ngrok-free.app
+    allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+    allowed-headers: "*"
+    allow-credentials: true
+    max-age: 3600
+
+  # Frontend URL for email links
+  frontend:
+    url: https://halfhearted-shavonda-unedificial.ngrok-free.dev
+
+# SPRINGDOC / SWAGGER CONFIGURATION
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+  show-actuator: true
+
+# ACTUATOR CONFIGURATION
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
+
+# ==========================================
+# M-PESA SANDBOX CONFIGURATION
+# ==========================================
+# ==========================================
+# M-PESA SANDBOX CONFIGURATION
+# ==========================================
+mpesa:
+  # CHANGED: 'api-url' -> 'api.url' to match Java @Value("${mpesa.api.url}")
+  api:
+    url: https://sandbox.safaricom.co.ke
+
+  # CHANGED: nesting under 'consumer' to match @Value("${mpesa.consumer.key}")
+  consumer:
+    key: ${MPESA_CONSUMER_KEY:RrATTQUoEisDjjOOJ3GHRjMxxjz5poanqzQqBJV71l0RnWJs}
+    secret: ${MPESA_CONSUMER_SECRET:zvFycfjcNJhqFXLWShhfZXUvq5cjAPAvlJ3kwpGckeZ7PMRKlIni8GuBk7KeRDAk}
+
+  shortcode: ${MPESA_SHORTCODE:174379}
+  passkey: ${MPESA_PASSKEY:bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919}
+
+  # CHANGED: nesting under 'callback' to match @Value("${mpesa.callback.url}")
+  callback:
+    url: https://halfhearted-shavonda-unedificial.ngrok-free.dev
+    secret: ${MPESA_CALLBACK_SECRET:MySuperSecretRandomString}
+
+  # CHANGED: nesting under 'oauth' and 'stk-push' to match Java structure
+  oauth:
+    endpoint: /oauth/v1/generate?grant_type=client_credentials
+
+  stk-push:
+    endpoint: /mpesa/stkpush/v1/processrequest
+
+  # SECURITY SETTINGS
+  security:
+    allowed-ips: 196.201.214.200,196.201.214.206,196.201.213.114,196.201.214.207,196.201.214.208,196.201.213.44,196.201.212.127,196.201.212.128,196.201.212.129,196.201.212.136,196.201.212.138,196.201.214.130
+    validate-callback-ip: true
+    verify-signature: false
+# PAYMENT LIMITS
+payment:
+  min-amount: 1
+  max-amount: 150000
+  require-full-payment: true
