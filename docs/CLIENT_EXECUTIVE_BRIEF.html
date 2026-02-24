@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>E-Commerce System - Client Executive Brief</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      word-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+<style>body{max-width:980px;margin:0 auto;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;color:#24292f;line-height:1.6}h1{border-bottom:2px solid #d0d7de;padding-bottom:12px;color:#1a1a2e}h2{border-bottom:1px solid #d0d7de;padding-bottom:8px;color:#16213e;margin-top:40px}h3{color:#0f3460}table{border-collapse:collapse;width:100%;margin:16px 0}th,td{border:1px solid #d0d7de;padding:8px 12px;text-align:left}th{background-color:#f6f8fa;font-weight:600}tr:nth-child(even){background-color:#f6f8fa}code{background:#f6f8fa;padding:2px 6px;border-radius:4px;font-size:90%}pre{background:#f6f8fa;padding:16px;border-radius:8px;overflow-x:auto;border:1px solid #d0d7de}pre code{background:none;padding:0}a{color:#0969da}hr{border:none;border-top:2px solid #d0d7de;margin:32px 0}</style></head>
+<body>
+<header id="title-block-header">
+<h1 class="title">E-Commerce System - Client Executive Brief</h1>
+</header>
+<h1 id="e-commerce-management-system-client-executive-brief">E-Commerce Management System — Client Executive Brief</h1>
+<p><strong>Date:</strong> February 24, 2026<br />
+<strong>Prepared by:</strong> PetersCode Engineering</p>
+<hr />
+<h2 id="what-we-built">What We Built</h2>
+<p>A <strong>complete e-commerce backend platform</strong> modeled after Kenya’s leading online shopping platforms (Kilimall, Jumia). This is the server-side engine that powers everything — from product browsing to checkout to payment processing.</p>
+<hr />
+<h2 id="key-capabilities">Key Capabilities</h2>
+<h3 id="shopping-experience-what-your-customers-see">🛒 Shopping Experience (What Your Customers See)</h3>
+<table>
+<colgroup>
+<col style="width: 42%" />
+<col style="width: 57%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Product Catalog</strong></td>
+<td>Browse 1000s of products with categories, search, filtering, sorting</td>
+</tr>
+<tr class="even">
+<td><strong>Product Variants</strong></td>
+<td>Size, color, material options per product</td>
+</tr>
+<tr class="odd">
+<td><strong>Smart Shopping Cart</strong></td>
+<td>Select items, save for later, add notes, bulk operations</td>
+</tr>
+<tr class="even">
+<td><strong>Wishlist</strong></td>
+<td>Save products for future purchase</td>
+</tr>
+<tr class="odd">
+<td><strong>Recently Viewed</strong></td>
+<td>Track browsing history</td>
+</tr>
+<tr class="even">
+<td><strong>Guest Shopping</strong></td>
+<td>Browse &amp; add to cart without creating an account</td>
+</tr>
+<tr class="odd">
+<td><strong>Coupon Discounts</strong></td>
+<td>Apply promo codes at checkout</td>
+</tr>
+<tr class="even">
+<td><strong>Flash Deals</strong></td>
+<td>Time-limited special offers</td>
+</tr>
+<tr class="odd">
+<td><strong>Reviews &amp; Ratings</strong></td>
+<td>Star ratings, written reviews, helpful votes</td>
+</tr>
+<tr class="even">
+<td><strong>Multiple Addresses</strong></td>
+<td>Save shipping/billing addresses</td>
+</tr>
+<tr class="odd">
+<td><strong>M-PESA Checkout</strong></td>
+<td>Pay directly from phone via M-PESA STK Push</td>
+</tr>
+<tr class="even">
+<td><strong>Order Tracking</strong></td>
+<td>Track order status from placement to delivery</td>
+</tr>
+<tr class="odd">
+<td><strong>Notifications</strong></td>
+<td>In-app alerts for order updates, promotions</td>
+</tr>
+</tbody>
+</table>
+<h3 id="selleradmin-dashboard-what-your-team-uses">🏪 Seller/Admin Dashboard (What Your Team Uses)</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Product Management</strong></td>
+<td>Create, update, delete products &amp; variants</td>
+</tr>
+<tr class="even">
+<td><strong>Inventory Control</strong></td>
+<td>Stock levels, low-stock alerts, restock, reservations</td>
+</tr>
+<tr class="odd">
+<td><strong>Order Management</strong></td>
+<td>View all orders, update status, add tracking info</td>
+</tr>
+<tr class="even">
+<td><strong>Payment Dashboard</strong></td>
+<td>View all payments, process refunds</td>
+</tr>
+<tr class="odd">
+<td><strong>Coupon Management</strong></td>
+<td>Create &amp; manage discount codes</td>
+</tr>
+<tr class="even">
+<td><strong>Flash Deal Setup</strong></td>
+<td>Schedule time-limited deals</td>
+</tr>
+<tr class="odd">
+<td><strong>Review Moderation</strong></td>
+<td>Approve, reject, respond to customer reviews</td>
+</tr>
+<tr class="even">
+<td><strong>User Management</strong></td>
+<td>Create staff accounts, manage roles</td>
+</tr>
+<tr class="odd">
+<td><strong>Shipping Management</strong></td>
+<td>Create shipments, update delivery status</td>
+</tr>
+<tr class="even">
+<td><strong>Audit Logs</strong></td>
+<td>Track all system actions for accountability</td>
+</tr>
+</tbody>
+</table>
+<h3 id="security-protecting-your-business">🔒 Security (Protecting Your Business)</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>JWT Authentication</strong></td>
+<td>Secure token-based login (no sessions)</td>
+</tr>
+<tr class="even">
+<td><strong>Role-Based Access</strong></td>
+<td>Customer, Seller, Admin, Support roles</td>
+</tr>
+<tr class="odd">
+<td><strong>Rate Limiting</strong></td>
+<td>Prevents abuse (60 req/min general, 5 req/min payments)</td>
+</tr>
+<tr class="even">
+<td><strong>IP-Bound Tokens</strong></td>
+<td>Tokens tied to user’s IP address</td>
+</tr>
+<tr class="odd">
+<td><strong>Account Lockout</strong></td>
+<td>5 failed logins = 30 min lockout</td>
+</tr>
+<tr class="even">
+<td><strong>M-PESA IP Whitelist</strong></td>
+<td>Only Safaricom servers can trigger payment callbacks</td>
+</tr>
+<tr class="odd">
+<td><strong>Input Sanitization</strong></td>
+<td>Blocks XSS and injection attacks</td>
+</tr>
+<tr class="even">
+<td><strong>Password Security</strong></td>
+<td>BCrypt hashing with strength factor 12</td>
+</tr>
+<tr class="odd">
+<td><strong>Email Verification</strong></td>
+<td>Required before account activation</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="numbers-that-matter">Numbers That Matter</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>API Endpoints</td>
+<td><strong>150+</strong></td>
+</tr>
+<tr class="even">
+<td>Database Tables</td>
+<td><strong>22</strong></td>
+</tr>
+<tr class="odd">
+<td>User Roles</td>
+<td><strong>5</strong> (Customer, Seller, Admin, Support, System)</td>
+</tr>
+<tr class="even">
+<td>Payment Methods</td>
+<td><strong>M-PESA</strong> (STK Push)</td>
+</tr>
+<tr class="odd">
+<td>Cache Layers</td>
+<td><strong>Redis</strong> (products, categories, tokens)</td>
+</tr>
+<tr class="even">
+<td>Max Payment</td>
+<td><strong>KES 150,000</strong> per transaction</td>
+</tr>
+<tr class="odd">
+<td>Response Time</td>
+<td><strong>&lt; 200ms</strong> average (cached)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="technology-used">Technology Used</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Technology</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Backend</td>
+<td><strong>Java 21 + Spring Boot 4.0</strong></td>
+<td>Enterprise-grade, secure, performant</td>
+</tr>
+<tr class="even">
+<td>Database</td>
+<td><strong>MySQL 8.0</strong></td>
+<td>Reliable, widely supported</td>
+</tr>
+<tr class="odd">
+<td>Cache</td>
+<td><strong>Redis</strong></td>
+<td>Sub-millisecond response times</td>
+</tr>
+<tr class="even">
+<td>Payments</td>
+<td><strong>M-PESA Daraja API</strong></td>
+<td>Kenya’s #1 payment method</td>
+</tr>
+<tr class="odd">
+<td>Auth</td>
+<td><strong>JWT Tokens</strong></td>
+<td>Stateless, scalable</td>
+</tr>
+<tr class="even">
+<td>API Docs</td>
+<td><strong>Swagger UI</strong></td>
+<td>Interactive API testing</td>
+</tr>
+<tr class="odd">
+<td>Migrations</td>
+<td><strong>Flyway</strong></td>
+<td>Safe database schema changes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="how-payments-work">How Payments Work</h2>
+<pre><code>1. Customer clicks &quot;Pay with M-PESA&quot;
+2. System sends STK Push to customer&#39;s phone number
+3. Customer sees M-PESA prompt on their phone
+4. Customer enters M-PESA PIN
+5. Safaricom processes payment
+6. Safaricom notifies our system (callback)
+7. Order is confirmed automatically
+8. Customer receives confirmation notification</code></pre>
+<p><strong>Payment Limits:</strong> KES 1 — KES 150,000</p>
+<hr />
+<h2 id="deployment-requirements">Deployment Requirements</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Requirement</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Server</td>
+<td>2 CPU, 4GB RAM (e.g., DigitalOcean, AWS)</td>
+</tr>
+<tr class="even">
+<td>Java</td>
+<td>Version 21 or higher</td>
+</tr>
+<tr class="odd">
+<td>MySQL</td>
+<td>Version 8.0 or higher</td>
+</tr>
+<tr class="even">
+<td>Redis</td>
+<td>Version 7.0 or higher</td>
+</tr>
+<tr class="odd">
+<td>SSL Certificate</td>
+<td>Required for M-PESA callbacks</td>
+</tr>
+<tr class="even">
+<td>Public Domain</td>
+<td>Required for M-PESA callbacks</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="whats-included">What’s Included</h2>
+<p>✅ Full source code on GitHub<br />
+✅ Database migration scripts (auto-setup)<br />
+✅ API documentation (Swagger UI)<br />
+✅ Technical documentation<br />
+✅ Environment configuration templates<br />
+✅ Development &amp; production configs</p>
+<hr />
+<h2 id="whats-next-recommended">What’s Next (Recommended)</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Enhancement</th>
+<th>Timeline</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Frontend (React/Next.js)</td>
+<td>4-6 weeks</td>
+<td>Customer-facing website</td>
+</tr>
+<tr class="even">
+<td>Mobile App (React Native)</td>
+<td>6-8 weeks</td>
+<td>iOS &amp; Android apps</td>
+</tr>
+<tr class="odd">
+<td>Docker Deployment</td>
+<td>1 week</td>
+<td>Easy cloud deployment</td>
+</tr>
+<tr class="even">
+<td>SMS Notifications</td>
+<td>1 week</td>
+<td>Order updates via SMS</td>
+</tr>
+<tr class="odd">
+<td>Image Uploads (S3)</td>
+<td>1 week</td>
+<td>Product image hosting</td>
+</tr>
+<tr class="even">
+<td>Elasticsearch</td>
+<td>2 weeks</td>
+<td>Lightning-fast product search</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="live-demo-access">Live Demo Access</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Resource</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>API Base</td>
+<td><code>http://localhost:8080/api/v1</code></td>
+</tr>
+<tr class="even">
+<td>Swagger UI</td>
+<td><code>http://localhost:8080/swagger-ui.html</code></td>
+</tr>
+<tr class="odd">
+<td>Health Check</td>
+<td><code>http://localhost:8080/actuator/health</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>For technical questions or support, contact the engineering team.</em></p>
+<p><em>© 2026 PetersCode Engineering. Confidential.</em></p>
+</body>
+</html>

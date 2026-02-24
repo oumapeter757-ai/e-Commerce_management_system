@@ -1,0 +1,2885 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>E-Commerce Management System - Technical Documentation</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      word-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+<style>body{max-width:980px;margin:0 auto;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;color:#24292f;line-height:1.6}h1{border-bottom:2px solid #d0d7de;padding-bottom:12px;color:#1a1a2e}h2{border-bottom:1px solid #d0d7de;padding-bottom:8px;color:#16213e;margin-top:40px}h3{color:#0f3460}table{border-collapse:collapse;width:100%;margin:16px 0}th,td{border:1px solid #d0d7de;padding:8px 12px;text-align:left}th{background-color:#f6f8fa;font-weight:600}tr:nth-child(even){background-color:#f6f8fa}code{background:#f6f8fa;padding:2px 6px;border-radius:4px;font-size:90%}pre{background:#f6f8fa;padding:16px;border-radius:8px;overflow-x:auto;border:1px solid #d0d7de}pre code{background:none;padding:0}a{color:#0969da}hr{border:none;border-top:2px solid #d0d7de;margin:32px 0}</style></head>
+<body>
+<header id="title-block-header">
+<h1 class="title">E-Commerce Management System - Technical Documentation</h1>
+</header>
+<h1 id="e-commerce-management-system-technical-documentation">E-Commerce Management System — Technical Documentation</h1>
+<p><strong>Version:</strong> 1.0.0<br />
+<strong>Date:</strong> February 24, 2026<br />
+<strong>Author:</strong> PetersCode Engineering<br />
+<strong>Repository:</strong> <a href="https://github.com/oumapeter757-ai/e-Commerce_management_system">GitHub — e-Commerce Management System</a></p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol type="1">
+<li><a href="#1-executive-summary">Executive Summary</a></li>
+<li><a href="#2-system-architecture">System Architecture</a></li>
+<li><a href="#3-technology-stack">Technology Stack</a></li>
+<li><a href="#4-project-structure">Project Structure</a></li>
+<li><a href="#5-database-design">Database Design</a></li>
+<li><a href="#6-authentication--security">Authentication &amp; Security</a></li>
+<li><a href="#7-api-reference">API Reference</a></li>
+<li><a href="#8-shopping-cart--kilimall-style-features">Shopping Cart — Kilimall-Style Features</a></li>
+<li><a href="#9-payment-integration--m-pesa">Payment Integration — M-PESA</a></li>
+<li><a href="#10-caching-strategy--redis">Caching Strategy — Redis</a></li>
+<li><a href="#11-deployment-guide">Deployment Guide</a></li>
+<li><a href="#12-environment-variables">Environment Variables</a></li>
+<li><a href="#13-error-handling">Error Handling</a></li>
+<li><a href="#14-performance--scalability">Performance &amp; Scalability</a></li>
+<li><a href="#15-future-roadmap">Future Roadmap</a></li>
+</ol>
+<hr />
+<h2 id="executive-summary">1. Executive Summary</h2>
+<p>The <strong>E-Commerce Management System</strong> is an enterprise-grade, full-featured online shopping platform backend built with Spring Boot 4.0. It replicates and extends the functionality found in leading Kenyan e-commerce platforms like <strong>Kilimall</strong>, providing a comprehensive REST API for:</p>
+<ul>
+<li><strong>Product Management</strong> with variants, categories, flash deals</li>
+<li><strong>Kilimall-Style Shopping Cart</strong> with item selection, save-for-later, bulk operations, coupon application</li>
+<li><strong>Wishlist &amp; Recently Viewed</strong> product tracking</li>
+<li><strong>Order Lifecycle Management</strong> with multi-status workflow</li>
+<li><strong>M-PESA Payment Integration</strong> (Safaricom STK Push)</li>
+<li><strong>Inventory Management</strong> with reservation system</li>
+<li><strong>Review &amp; Rating System</strong> with voting, moderation</li>
+<li><strong>Real-Time Notifications</strong></li>
+<li><strong>Multi-Role Authorization</strong> (Customer, Admin, Seller, Support)</li>
+<li><strong>Redis Caching</strong> for performance optimization</li>
+<li><strong>Comprehensive Security</strong> (JWT, rate limiting, input sanitization, HMAC callback verification)</li>
+</ul>
+<h3 id="key-metrics">Key Metrics</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Total Java Source Files</td>
+<td>199</td>
+</tr>
+<tr class="even">
+<td>REST API Endpoints</td>
+<td>150+</td>
+</tr>
+<tr class="odd">
+<td>Database Tables</td>
+<td>20+</td>
+</tr>
+<tr class="even">
+<td>Controllers</td>
+<td>15</td>
+</tr>
+<tr class="odd">
+<td>Service Implementations</td>
+<td>19</td>
+</tr>
+<tr class="even">
+<td>Flyway Migrations</td>
+<td>15 (V1–V15)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="system-architecture">2. System Architecture</h2>
+<h3 id="architecture-pattern">2.1 Architecture Pattern</h3>
+<p>The system follows the <strong>MVC (Model-View-Controller)</strong> pattern adapted for REST APIs:</p>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│                     CLIENT (Frontend)                     │
+│            React / Angular / Mobile App                   │
+└─────────────────────────┬────────────────────────────────┘
+                          │ HTTPS (JSON)
+                          ▼
+┌──────────────────────────────────────────────────────────┐
+│                  SECURITY FILTER CHAIN                    │
+│  RequestIdFilter → RateLimitingFilter → JwtAuthFilter     │
+└─────────────────────────┬────────────────────────────────┘
+                          ▼
+┌──────────────────────────────────────────────────────────┐
+│                    CONTROLLER LAYER                       │
+│  AuthController, CartController, ProductController, etc.  │
+│  (Input validation, request mapping, response formatting) │
+└─────────────────────────┬────────────────────────────────┘
+                          ▼
+┌──────────────────────────────────────────────────────────┐
+│                     SERVICE LAYER                         │
+│  CartServiceImpl, OrderServiceImpl, PaymentServiceImpl    │
+│  (Business logic, transaction management, caching)        │
+└──────────┬──────────────┴──────────────┬─────────────────┘
+           ▼                             ▼
+┌────────────────────┐     ┌──────────────────────────────┐
+│   REPOSITORY LAYER │     │      EXTERNAL SERVICES       │
+│   (Spring Data JPA)│     │  • M-PESA API (Safaricom)    │
+│   22 Repositories  │     │  • Email Service (SMTP/Gmail)│
+└──────────┬─────────┘     │  • Redis Cache               │
+           ▼               └──────────────────────────────┘
+┌────────────────────┐
+│  MySQL 8.0 Database│
+│  (Flyway managed)  │
+└────────────────────┘</code></pre>
+<h3 id="key-design-principles">2.2 Key Design Principles</h3>
+<ul>
+<li><strong>Layered Architecture</strong> — Strict separation of concerns (Controller → Service → Repository)</li>
+<li><strong>DTO Pattern</strong> — Request/Response DTOs to decouple API from entities</li>
+<li><strong>MapStruct Mappers</strong> — Compile-time type-safe mapping between DTOs and entities</li>
+<li><strong>Optimistic Locking</strong> — <code>@Version</code> on critical entities (Cart, Inventory) to prevent concurrent update conflicts</li>
+<li><strong>Idempotent Operations</strong> — Payment idempotency keys prevent duplicate charges</li>
+<li><strong>Stateless Authentication</strong> — JWT tokens, no server-side sessions</li>
+</ul>
+<hr />
+<h2 id="technology-stack">3. Technology Stack</h2>
+<h3 id="core-framework">3.1 Core Framework</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Technology</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Runtime</td>
+<td>Java</td>
+<td>21 (LTS)</td>
+</tr>
+<tr class="even">
+<td>Framework</td>
+<td>Spring Boot</td>
+<td>4.0.1</td>
+</tr>
+<tr class="odd">
+<td>Web</td>
+<td>Spring Web MVC</td>
+<td>7.0.2</td>
+</tr>
+<tr class="even">
+<td>Security</td>
+<td>Spring Security</td>
+<td>7.0.2</td>
+</tr>
+<tr class="odd">
+<td>Data Access</td>
+<td>Spring Data JPA</td>
+<td>4.0.1</td>
+</tr>
+<tr class="even">
+<td>Caching</td>
+<td>Spring Data Redis</td>
+<td>4.0.1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="database-persistence">3.2 Database &amp; Persistence</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Technology</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Database</td>
+<td>MySQL</td>
+<td>8.0</td>
+</tr>
+<tr class="even">
+<td>ORM</td>
+<td>Hibernate</td>
+<td>7.2.0</td>
+</tr>
+<tr class="odd">
+<td>Connection Pool</td>
+<td>HikariCP</td>
+<td>(bundled)</td>
+</tr>
+<tr class="even">
+<td>Migration</td>
+<td>Flyway</td>
+<td>11.14.1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="security-auth">3.3 Security &amp; Auth</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Technology</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>JWT</td>
+<td>jjwt (io.jsonwebtoken)</td>
+<td>0.12.6</td>
+</tr>
+<tr class="even">
+<td>Password Hashing</td>
+<td>BCrypt</td>
+<td>Strength 12</td>
+</tr>
+<tr class="odd">
+<td>Rate Limiting</td>
+<td>Custom + Redis</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>Input Sanitization</td>
+<td>OWASP jsoup</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="serialization">3.4 Serialization</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Technology</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>JSON (HTTP)</td>
+<td>Jackson 3.x (tools.jackson)</td>
+<td>3.0.3</td>
+</tr>
+<tr class="even">
+<td>JSON (Redis)</td>
+<td>Jackson 3.x JsonMapper</td>
+<td>3.0.3</td>
+</tr>
+<tr class="odd">
+<td>Object Mapping</td>
+<td>MapStruct</td>
+<td>1.6.3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="external-integrations">3.5 External Integrations</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Integration</th>
+<th>Provider</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>M-PESA STK Push</td>
+<td>Safaricom</td>
+<td>Mobile money payments</td>
+</tr>
+<tr class="even">
+<td>SMTP Email</td>
+<td>Gmail (App Password)</td>
+<td>Verification, notifications</td>
+</tr>
+<tr class="odd">
+<td>Redis</td>
+<td>Local / Cloud</td>
+<td>Caching, rate limiting</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dev-build-tools">3.6 Dev &amp; Build Tools</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Tool</th>
+<th>Technology</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Build</td>
+<td>Maven 3.x</td>
+</tr>
+<tr class="even">
+<td>Code Generation</td>
+<td>Lombok</td>
+</tr>
+<tr class="odd">
+<td>API Docs</td>
+<td>SpringDoc OpenAPI (Swagger UI)</td>
+</tr>
+<tr class="even">
+<td>Logging</td>
+<td>Logback + SLF4J</td>
+</tr>
+<tr class="odd">
+<td>Monitoring</td>
+<td>Spring Boot Actuator</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="project-structure">4. Project Structure</h2>
+<pre><code>ecommerce_management_system/
+├── pom.xml                          # Maven dependencies &amp; build config
+├── .env                             # Environment variables (secrets)
+├── flyway-repair.sh                 # Database reset utility
+├── src/main/java/com/peterscode/ecommerce_management_system/
+│   ├── EcommerceManagementSystemApplication.java    # Entry point
+│   ├── config/
+│   │   ├── AsyncConfig.java         # Async thread pool (5 core, 10 max)
+│   │   ├── OpenApiConfig.java       # Swagger/OpenAPI configuration
+│   │   ├── RedisConfig.java         # Redis caching + custom serializer
+│   │   ├── RestTemplateConfig.java  # HTTP client for M-PESA
+│   │   └── SecurityConfig.java      # JWT security filter chain
+│   ├── constant/
+│   │   └── SecurityConstants.java   # CORS origins, public endpoints
+│   ├── controller/                  # 15 REST controllers
+│   │   ├── AddressController.java
+│   │   ├── AuthController.java
+│   │   ├── CartController.java
+│   │   ├── CategoryController.java
+│   │   ├── CouponController.java
+│   │   ├── FlashDealController.java
+│   │   ├── InventoryController.java
+│   │   ├── NotificationController.java
+│   │   ├── OrderController.java
+│   │   ├── PaymentController.java
+│   │   ├── ProductController.java
+│   │   ├── ProductVariantController.java
+│   │   ├── RecentlyViewedController.java
+│   │   ├── ReviewController.java
+│   │   ├── ShippingController.java
+│   │   ├── UserController.java
+│   │   └── WishlistController.java
+│   ├── exception/                   # Global error handling
+│   │   ├── BadRequestException.java
+│   │   ├── GlobalExceptionHandler.java
+│   │   ├── InsufficientStockException.java
+│   │   ├── ResourceNotFoundException.java
+│   │   └── UnauthorizedException.java
+│   ├── mapper/                      # 15 MapStruct mappers
+│   ├── model/
+│   │   ├── audit/AuditLog.java
+│   │   ├── dto/
+│   │   │   ├── common/              # Shared DTOs (AddressDTO, CartItemDTO, OrderItemDTO)
+│   │   │   ├── request/             # 25+ request DTOs
+│   │   │   └── response/            # 20+ response DTOs
+│   │   ├── entity/                  # 20 JPA entities
+│   │   └── enums/                   # 9 enum types
+│   ├── repository/                  # 22 JPA repositories
+│   ├── security/
+│   │   ├── CustomUserDetailsService.java
+│   │   ├── InputSanitizer.java
+│   │   ├── JwtAuthenticationEntryPoint.java
+│   │   ├── JwtAuthenticationFilter.java
+│   │   ├── JwtTokenProvider.java
+│   │   ├── RateLimitingFilter.java
+│   │   ├── RequestIdFilter.java
+│   │   └── SecurityUtils.java
+│   └── service/
+│       ├── impl/                    # 19 service implementations
+│       └── mpesa/MpesaTokenService.java
+├── src/main/resources/
+│   ├── application.yml              # Main configuration
+│   ├── application-dev.yml          # Dev profile
+│   ├── application-prod.yml         # Production profile
+│   └── db/migration/               # 15 Flyway SQL + Java migrations
+└── src/main/java/db/migration/
+    └── V15__Reconcile_Schema_With_Entities.java  # Java-based migration</code></pre>
+<hr />
+<h2 id="database-design">5. Database Design</h2>
+<h3 id="entity-relationship-overview">5.1 Entity Relationship Overview</h3>
+<p>The system has <strong>20 database tables</strong> managed by Flyway migrations (V1–V15):</p>
+<pre><code>┌─────────┐     ┌──────────────┐     ┌──────────┐
+│  users  │────&lt;│verification_ │     │ addresses│
+│         │     │  tokens      │     │          │
+└────┬────┘     └──────────────┘     └──────────┘
+     │
+     ├──────────────────────────┐
+     │                          │
+┌────▼────┐              ┌──────▼─────┐
+│  carts  │              │  orders    │
+│         │              │            │
+└────┬────┘              └──────┬─────┘
+     │                          │
+┌────▼──────┐            ┌──────▼──────┐
+│ cart_items │            │ order_items │
+└────┬───────┘            └──────┬──────┘
+     │                           │
+┌────▼───────┐   ┌──────────┐   │     ┌──────────┐
+│  products  │──&lt;│categories│   ├────&gt;│ payments │
+│            │   └──────────┘   │     └──────────┘
+└──┬─────┬──┘                   │
+   │     │                ┌─────▼────┐
+   │     │                │ shipping │
+   │     │                └──────────┘
+┌──▼──┐  ┌──▼──────────┐
+│prod_│  │  inventory   │
+│vari │  │              │
+│ants │  └──────────────┘
+└─────┘</code></pre>
+<h3 id="table-descriptions">5.2 Table Descriptions</h3>
+<table>
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 38%" />
+<col style="width: 38%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Table</th>
+<th>Description</th>
+<th>Key Fields</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>users</code></td>
+<td>User accounts with roles</td>
+<td>email, password_hash, role, is_verified</td>
+</tr>
+<tr class="even">
+<td><code>verification_tokens</code></td>
+<td>Email verification &amp; password reset</td>
+<td>token, token_type, expires_at</td>
+</tr>
+<tr class="odd">
+<td><code>addresses</code></td>
+<td>Shipping/billing addresses</td>
+<td>user_id, address_type, is_default</td>
+</tr>
+<tr class="even">
+<td><code>categories</code></td>
+<td>Hierarchical product categories</td>
+<td>name, slug, parent_id, is_active</td>
+</tr>
+<tr class="odd">
+<td><code>products</code></td>
+<td>Product catalog</td>
+<td>name, sku, price, discount_price, seller_id</td>
+</tr>
+<tr class="even">
+<td><code>product_variants</code></td>
+<td>Size/color/material variants</td>
+<td>product_id, variant_type, variant_value, price_adjustment</td>
+</tr>
+<tr class="odd">
+<td><code>inventory</code></td>
+<td>Stock management with reservations</td>
+<td>product_id, total_quantity, reserved_quantity, version</td>
+</tr>
+<tr class="even">
+<td><code>carts</code></td>
+<td>Shopping carts with metadata</td>
+<td>user_id, total_price, expires_at, coupon_code</td>
+</tr>
+<tr class="odd">
+<td><code>cart_items</code></td>
+<td>Items in cart with Kilimall features</td>
+<td>cart_id, product_id, selected, saved_for_later, notes</td>
+</tr>
+<tr class="even">
+<td><code>wishlists</code></td>
+<td>Product wishlists</td>
+<td>user_id, product_id</td>
+</tr>
+<tr class="odd">
+<td><code>recently_viewed</code></td>
+<td>Browsing history</td>
+<td>user_id, product_id, viewed_at</td>
+</tr>
+<tr class="even">
+<td><code>orders</code></td>
+<td>Purchase orders</td>
+<td>user_id, order_number, status, total_amount</td>
+</tr>
+<tr class="odd">
+<td><code>order_items</code></td>
+<td>Individual items in order</td>
+<td>order_id, product_id, quantity, unit_price</td>
+</tr>
+<tr class="even">
+<td><code>payments</code></td>
+<td>M-PESA payment records</td>
+<td>order_id, mpesa_receipt, status, idempotency_key</td>
+</tr>
+<tr class="odd">
+<td><code>shipping</code></td>
+<td>Delivery tracking</td>
+<td>order_id, tracking_number, carrier, status</td>
+</tr>
+<tr class="even">
+<td><code>reviews</code></td>
+<td>Product reviews</td>
+<td>user_id, product_id, rating, comment, is_approved</td>
+</tr>
+<tr class="odd">
+<td><code>review_votes</code></td>
+<td>Helpful/unhelpful votes</td>
+<td>review_id, user_id, is_helpful</td>
+</tr>
+<tr class="even">
+<td><code>notifications</code></td>
+<td>In-app notifications</td>
+<td>user_id, type, message, is_read</td>
+</tr>
+<tr class="odd">
+<td><code>audit_logs</code></td>
+<td>System audit trail</td>
+<td>user_id, action, entity_type, details</td>
+</tr>
+<tr class="even">
+<td><code>coupons</code></td>
+<td>Discount coupons</td>
+<td>code, discount_type, discount_value, min_order</td>
+</tr>
+<tr class="odd">
+<td><code>coupon_usages</code></td>
+<td>Coupon redemption tracking</td>
+<td>coupon_id, user_id, order_id</td>
+</tr>
+<tr class="even">
+<td><code>flash_deals</code></td>
+<td>Time-limited deals</td>
+<td>product_id, deal_price, start_time, end_time</td>
+</tr>
+</tbody>
+</table>
+<h3 id="flyway-migrations">5.3 Flyway Migrations</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Version</th>
+<th>Description</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>V1</td>
+<td>Users + Audit tables</td>
+<td>SQL</td>
+</tr>
+<tr class="even">
+<td>V2</td>
+<td>Verification tokens</td>
+<td>SQL</td>
+</tr>
+<tr class="odd">
+<td>V3</td>
+<td>Products + Categories</td>
+<td>SQL</td>
+</tr>
+<tr class="even">
+<td>V4</td>
+<td>Addresses</td>
+<td>SQL</td>
+</tr>
+<tr class="odd">
+<td>V5</td>
+<td>Cart + Cart items</td>
+<td>SQL</td>
+</tr>
+<tr class="even">
+<td>V7</td>
+<td>Reviews + Review votes</td>
+<td>SQL</td>
+</tr>
+<tr class="odd">
+<td>V8</td>
+<td>Inventory</td>
+<td>SQL</td>
+</tr>
+<tr class="even">
+<td>V9</td>
+<td>Notifications</td>
+<td>SQL</td>
+</tr>
+<tr class="odd">
+<td>V10</td>
+<td>Payments</td>
+<td>SQL</td>
+</tr>
+<tr class="even">
+<td>V11</td>
+<td>Shipping</td>
+<td>SQL</td>
+</tr>
+<tr class="odd">
+<td>V12</td>
+<td>Cart enhancements + Wishlist + Recently Viewed</td>
+<td>SQL</td>
+</tr>
+<tr class="even">
+<td>V13</td>
+<td>Consolidate PaymentStatus enum</td>
+<td>SQL</td>
+</tr>
+<tr class="odd">
+<td>V14</td>
+<td>Coupons + Variants + Flash Deals + Security columns</td>
+<td>SQL</td>
+</tr>
+<tr class="even">
+<td>V15</td>
+<td>Idempotent schema reconciliation (safety net)</td>
+<td>Java</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="authentication-security">6. Authentication &amp; Security</h2>
+<h3 id="authentication-flow">6.1 Authentication Flow</h3>
+<pre><code>┌──────────┐    POST /api/v1/auth/register    ┌──────────┐
+│  Client  │ ─────────────────────────────────&gt;│  Server  │
+│          │                                    │          │
+│          │    ← 201 Created + Verify Email    │          │
+│          │                                    │          │
+│          │    GET /api/v1/auth/verify-email   │          │
+│          │ ─────────────────────────────────&gt;│          │
+│          │                                    │          │
+│          │    POST /api/v1/auth/login         │          │
+│          │ ─────────────────────────────────&gt;│          │
+│          │                                    │          │
+│          │    ← 200 { accessToken,            │          │
+│          │           refreshToken }           │          │
+│          │                                    │          │
+│          │    GET /api/v1/products (Bearer)   │          │
+│          │ ─────────────────────────────────&gt;│          │
+│          │                                    │          │
+│          │    POST /api/v1/auth/refresh-token │          │
+│          │ ─────────────────────────────────&gt;│          │
+│          │    ← new accessToken               │          │
+└──────────┘                                    └──────────┘</code></pre>
+<h3 id="jwt-token-structure">6.2 JWT Token Structure</h3>
+<ul>
+<li><strong>Access Token</strong>: 1 hour expiry, contains userId, email, role, IP binding</li>
+<li><strong>Refresh Token</strong>: 7 days expiry, used to get new access tokens</li>
+<li><strong>Secret</strong>: 256-bit HMAC-SHA key from <code>JWT_SECRET</code> env variable</li>
+<li><strong>IP Binding</strong>: Tokens are validated against the client IP for extra security</li>
+</ul>
+<h3 id="role-based-access-control-rbac">6.3 Role-Based Access Control (RBAC)</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 66%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Role</th>
+<th>Permissions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>CUSTOMER</code></td>
+<td>Browse, cart, checkout, orders, reviews, wishlist, addresses</td>
+</tr>
+<tr class="even">
+<td><code>SELLER</code></td>
+<td>All customer + product CRUD, category management, inventory</td>
+</tr>
+<tr class="odd">
+<td><code>ADMIN</code></td>
+<td>Everything — user management, reports, order management, coupons, flash deals, review moderation</td>
+</tr>
+<tr class="even">
+<td><code>SUPPORT</code></td>
+<td>View orders, process returns (future)</td>
+</tr>
+<tr class="odd">
+<td><code>SYSTEM</code></td>
+<td>Internal inventory operations (reserve/release/confirm)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="security-layers">6.4 Security Layers</h3>
+<table>
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 48%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Layer</th>
+<th>Implementation</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Request ID</strong></td>
+<td><code>RequestIdFilter</code></td>
+<td>Assigns UUID to every request for log correlation</td>
+</tr>
+<tr class="even">
+<td><strong>Rate Limiting</strong></td>
+<td><code>RateLimitingFilter</code> + Redis</td>
+<td>60 req/min general, 5 req/min payments, 30 req/min cart</td>
+</tr>
+<tr class="odd">
+<td><strong>JWT Auth</strong></td>
+<td><code>JwtAuthenticationFilter</code></td>
+<td>Validates Bearer token, sets SecurityContext</td>
+</tr>
+<tr class="even">
+<td><strong>Input Sanitization</strong></td>
+<td><code>InputSanitizer</code> (jsoup)</td>
+<td>Strips HTML/XSS from all user inputs</td>
+</tr>
+<tr class="odd">
+<td><strong>CORS</strong></td>
+<td>Spring Security CORS</td>
+<td>Whitelist allowed origins</td>
+</tr>
+<tr class="even">
+<td><strong>CSRF</strong></td>
+<td>Disabled (stateless JWT)</td>
+<td>N/A for API-only backend</td>
+</tr>
+<tr class="odd">
+<td><strong>Security Headers</strong></td>
+<td>CSP, HSTS, X-Frame-Options, X-XSS-Protection</td>
+<td>Browser security</td>
+</tr>
+<tr class="even">
+<td><strong>Password Hashing</strong></td>
+<td>BCrypt(12)</td>
+<td>Adaptive cost factor</td>
+</tr>
+<tr class="odd">
+<td><strong>Account Lockout</strong></td>
+<td>5 failed attempts → 30 min lock</td>
+<td>Brute force protection</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rate-limiting-rules">6.5 Rate Limiting Rules</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Endpoint Pattern</th>
+<th>Limit</th>
+<th>Window</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>General API</td>
+<td>60 requests</td>
+<td>per minute</td>
+</tr>
+<tr class="even">
+<td>General API</td>
+<td>1000 requests</td>
+<td>per hour</td>
+</tr>
+<tr class="odd">
+<td><code>/api/v1/payments/**</code></td>
+<td>5 requests</td>
+<td>per minute</td>
+</tr>
+<tr class="even">
+<td><code>/api/v1/cart/**</code> (mutations)</td>
+<td>30 requests</td>
+<td>per minute</td>
+</tr>
+<tr class="odd">
+<td><code>/api/v1/auth/**</code></td>
+<td>10 requests</td>
+<td>per minute</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="api-reference">7. API Reference</h2>
+<h3 id="base-url">Base URL</h3>
+<pre><code>http://localhost:8080/api/v1</code></pre>
+<h3 id="swagger-ui">Swagger UI</h3>
+<pre><code>http://localhost:8080/swagger-ui.html</code></pre>
+<h3 id="authentication-apis-apiv1auth">7.1 Authentication APIs — <code>/api/v1/auth</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>POST</td>
+<td><code>/register/customer</code></td>
+<td>Public</td>
+<td>Register a customer account</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/admin/register</code></td>
+<td>ADMIN</td>
+<td>Create admin/seller/support user</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/admin/init</code></td>
+<td>Public</td>
+<td>Initialize first admin (one-time)</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/login</code></td>
+<td>Public</td>
+<td>Login with email + password</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/logout</code></td>
+<td>Authenticated</td>
+<td>Invalidate current session</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/refresh-token</code></td>
+<td>Public</td>
+<td>Refresh access token</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/verify-email?token=</code></td>
+<td>Public</td>
+<td>Verify email with token</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/resend-verification</code></td>
+<td>Public</td>
+<td>Resend verification email</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/forgot-password</code></td>
+<td>Public</td>
+<td>Request password reset email</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/reset-password</code></td>
+<td>Public</td>
+<td>Reset password with token</td>
+</tr>
+</tbody>
+</table>
+<h3 id="product-apis-apiv1products">7.2 Product APIs — <code>/api/v1/products</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GET</td>
+<td><code>/</code></td>
+<td>Public</td>
+<td>List all products (paginated)</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/{id}</code></td>
+<td>Public</td>
+<td>Get product by ID</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/sku/{sku}</code></td>
+<td>Public</td>
+<td>Get product by SKU</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/all</code></td>
+<td>Public</td>
+<td>List all (paginated + sorted)</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/category/{categoryId}</code></td>
+<td>Public</td>
+<td>Products by category</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/seller/{sellerId}</code></td>
+<td>Public</td>
+<td>Products by seller</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/featured</code></td>
+<td>Public</td>
+<td>Featured products</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/new-arrivals</code></td>
+<td>Public</td>
+<td>Newest products</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/best-sellers</code></td>
+<td>Public</td>
+<td>Top selling products</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/on-sale</code></td>
+<td>Public</td>
+<td>Discounted products</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/top-rated</code></td>
+<td>Public</td>
+<td>Highest rated products</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/search?keyword=</code></td>
+<td>Public</td>
+<td>Full-text search</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/filter?category=&amp;brand=&amp;minPrice=&amp;maxPrice=</code></td>
+<td>Public</td>
+<td>Advanced filtering</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/brands</code></td>
+<td>Public</td>
+<td>List all brands</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/low-stock</code></td>
+<td>ADMIN/SELLER</td>
+<td>Low stock alerts</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/out-of-stock</code></td>
+<td>ADMIN/SELLER</td>
+<td>Out of stock items</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/stats/summary</code></td>
+<td>ADMIN</td>
+<td>Product statistics</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/</code></td>
+<td>ADMIN/SELLER</td>
+<td>Create product</td>
+</tr>
+<tr class="odd">
+<td>PUT</td>
+<td><code>/{id}</code></td>
+<td>ADMIN/SELLER</td>
+<td>Update product</td>
+</tr>
+<tr class="even">
+<td>PATCH</td>
+<td><code>/{id}/stock</code></td>
+<td>ADMIN/SELLER</td>
+<td>Update stock quantity</td>
+</tr>
+<tr class="odd">
+<td>PATCH</td>
+<td><code>/{id}/status</code></td>
+<td>ADMIN/SELLER</td>
+<td>Activate/deactivate</td>
+</tr>
+<tr class="even">
+<td>DELETE</td>
+<td><code>/{id}</code></td>
+<td>ADMIN</td>
+<td>Delete product</td>
+</tr>
+</tbody>
+</table>
+<h3 id="product-variant-apis-apiv1productsproductidvariants">7.3 Product Variant APIs — <code>/api/v1/products/{productId}/variants</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GET</td>
+<td><code>/</code></td>
+<td>Public</td>
+<td>List active variants</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/{variantId}</code></td>
+<td>Public</td>
+<td>Get variant details</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/all</code></td>
+<td>ADMIN/SELLER</td>
+<td>List all variants (inc. inactive)</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/</code></td>
+<td>ADMIN/SELLER</td>
+<td>Create variant</td>
+</tr>
+<tr class="odd">
+<td>PUT</td>
+<td><code>/{variantId}</code></td>
+<td>ADMIN/SELLER</td>
+<td>Update variant</td>
+</tr>
+<tr class="even">
+<td>DELETE</td>
+<td><code>/{variantId}</code></td>
+<td>ADMIN/SELLER</td>
+<td>Delete variant</td>
+</tr>
+</tbody>
+</table>
+<h3 id="category-apis-apiv1categories">7.4 Category APIs — <code>/api/v1/categories</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GET</td>
+<td><code>/</code></td>
+<td>Public</td>
+<td>List all categories</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/{id}</code></td>
+<td>Public</td>
+<td>Get category by ID</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/slug/{slug}</code></td>
+<td>Public</td>
+<td>Get by URL slug</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/parent/{parentId}</code></td>
+<td>Public</td>
+<td>Get subcategories</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/root</code></td>
+<td>Public</td>
+<td>Top-level categories</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/tree</code></td>
+<td>Public</td>
+<td>Full category tree</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/search?keyword=</code></td>
+<td>Public</td>
+<td>Search categories</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/</code></td>
+<td>ADMIN/SELLER</td>
+<td>Create category</td>
+</tr>
+<tr class="odd">
+<td>PUT</td>
+<td><code>/{id}</code></td>
+<td>ADMIN/SELLER</td>
+<td>Update category</td>
+</tr>
+<tr class="even">
+<td>DELETE</td>
+<td><code>/{id}</code></td>
+<td>ADMIN</td>
+<td>Delete category</td>
+</tr>
+</tbody>
+</table>
+<h3 id="shopping-cart-apis-apiv1cart">7.5 Shopping Cart APIs — <code>/api/v1/cart</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GET</td>
+<td><code>/</code></td>
+<td>CUSTOMER</td>
+<td>Get cart with all items</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/summary</code></td>
+<td>CUSTOMER</td>
+<td>Cart totals summary</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/items</code></td>
+<td>CUSTOMER</td>
+<td>Add item to cart</td>
+</tr>
+<tr class="even">
+<td>PUT</td>
+<td><code>/items/{cartItemId}</code></td>
+<td>CUSTOMER</td>
+<td>Update item quantity</td>
+</tr>
+<tr class="odd">
+<td>DELETE</td>
+<td><code>/items/{cartItemId}</code></td>
+<td>CUSTOMER</td>
+<td>Remove single item</td>
+</tr>
+<tr class="even">
+<td>DELETE</td>
+<td><code>/</code></td>
+<td>CUSTOMER</td>
+<td>Clear entire cart</td>
+</tr>
+<tr class="odd">
+<td>PATCH</td>
+<td><code>/items/select</code></td>
+<td>CUSTOMER</td>
+<td>Toggle item selection</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/items/select-all</code></td>
+<td>CUSTOMER</td>
+<td>Select all items</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/items/deselect-all</code></td>
+<td>CUSTOMER</td>
+<td>Deselect all items</td>
+</tr>
+<tr class="even">
+<td>DELETE</td>
+<td><code>/items/bulk</code></td>
+<td>CUSTOMER</td>
+<td>Bulk remove items</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/items/{id}/save-for-later</code></td>
+<td>CUSTOMER</td>
+<td>Move to save-for-later</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/items/{id}/move-to-cart</code></td>
+<td>CUSTOMER</td>
+<td>Move back to active cart</td>
+</tr>
+<tr class="odd">
+<td>PATCH</td>
+<td><code>/items/{id}/notes</code></td>
+<td>CUSTOMER</td>
+<td>Add notes (color/size)</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/coupon</code></td>
+<td>CUSTOMER</td>
+<td>Apply coupon code</td>
+</tr>
+<tr class="odd">
+<td>DELETE</td>
+<td><code>/coupon</code></td>
+<td>CUSTOMER</td>
+<td>Remove coupon</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/shipping-estimate</code></td>
+<td>CUSTOMER</td>
+<td>Estimate shipping cost</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/merge</code></td>
+<td>CUSTOMER</td>
+<td>Merge guest cart on login</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/guest</code></td>
+<td>Public</td>
+<td>Get guest cart (by session)</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/guest/items</code></td>
+<td>Public</td>
+<td>Add item to guest cart</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wishlist-apis-apiv1wishlist">7.6 Wishlist APIs — <code>/api/v1/wishlist</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GET</td>
+<td><code>/</code></td>
+<td>CUSTOMER</td>
+<td>Get all wishlist items</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/</code></td>
+<td>CUSTOMER</td>
+<td>Add product to wishlist</td>
+</tr>
+<tr class="odd">
+<td>DELETE</td>
+<td><code>/{productId}</code></td>
+<td>CUSTOMER</td>
+<td>Remove from wishlist</td>
+</tr>
+<tr class="even">
+<td>DELETE</td>
+<td><code>/</code></td>
+<td>CUSTOMER</td>
+<td>Clear wishlist</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/check/{productId}</code></td>
+<td>CUSTOMER</td>
+<td>Check if product is wishlisted</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/count</code></td>
+<td>CUSTOMER</td>
+<td>Get wishlist count</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/{productId}/move-to-cart</code></td>
+<td>CUSTOMER</td>
+<td>Move wishlist item to cart</td>
+</tr>
+</tbody>
+</table>
+<h3 id="recently-viewed-apis-apiv1recently-viewed">7.7 Recently Viewed APIs — <code>/api/v1/recently-viewed</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GET</td>
+<td><code>/</code></td>
+<td>CUSTOMER</td>
+<td>Get recently viewed products</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/{productId}</code></td>
+<td>CUSTOMER</td>
+<td>Track product view</td>
+</tr>
+<tr class="odd">
+<td>DELETE</td>
+<td><code>/</code></td>
+<td>CUSTOMER</td>
+<td>Clear history</td>
+</tr>
+</tbody>
+</table>
+<h3 id="order-apis-apiv1orders">7.8 Order APIs — <code>/api/v1/orders</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>POST</td>
+<td><code>/</code></td>
+<td>CUSTOMER</td>
+<td>Create order</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/checkout</code></td>
+<td>CUSTOMER</td>
+<td>Checkout from cart (Kilimall-style)</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/my-orders</code></td>
+<td>CUSTOMER</td>
+<td>My orders (paginated)</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/{orderId}</code></td>
+<td>Authenticated</td>
+<td>Get order by ID</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/number/{orderNumber}</code></td>
+<td>Authenticated</td>
+<td>Get by order number</td>
+</tr>
+<tr class="even">
+<td>PUT</td>
+<td><code>/{orderId}/cancel</code></td>
+<td>Authenticated</td>
+<td>Cancel order</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/user/date-range</code></td>
+<td>CUSTOMER</td>
+<td>Orders within date range</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/user/stats/total-spent</code></td>
+<td>CUSTOMER</td>
+<td>Total spent</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/user/stats/count</code></td>
+<td>CUSTOMER</td>
+<td>Total order count</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/</code></td>
+<td>ADMIN</td>
+<td>List all orders</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/user/{userId}</code></td>
+<td>ADMIN</td>
+<td>Orders by user</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/status/{status}</code></td>
+<td>ADMIN</td>
+<td>Orders by status</td>
+</tr>
+<tr class="odd">
+<td>PUT</td>
+<td><code>/{orderId}/status</code></td>
+<td>ADMIN</td>
+<td>Update order status</td>
+</tr>
+<tr class="even">
+<td>PUT</td>
+<td><code>/{orderId}/tracking</code></td>
+<td>ADMIN</td>
+<td>Update tracking info</td>
+</tr>
+<tr class="odd">
+<td>PUT</td>
+<td><code>/{orderId}/admin-notes</code></td>
+<td>ADMIN</td>
+<td>Add admin notes</td>
+</tr>
+<tr class="even">
+<td>DELETE</td>
+<td><code>/{orderId}</code></td>
+<td>ADMIN</td>
+<td>Delete order</td>
+</tr>
+</tbody>
+</table>
+<h3 id="payment-apis-apiv1payments">7.9 Payment APIs — <code>/api/v1/payments</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>POST</td>
+<td><code>/initiate</code></td>
+<td>CUSTOMER</td>
+<td>Initiate M-PESA STK Push</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/mpesa/callback</code></td>
+<td>Public</td>
+<td>Safaricom callback (webhook)</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/mpesa/timeout</code></td>
+<td>Public</td>
+<td>Safaricom timeout callback</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/user</code></td>
+<td>CUSTOMER</td>
+<td>My payments</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/order/{orderId}</code></td>
+<td>CUSTOMER</td>
+<td>Payments for order</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/{paymentId}</code></td>
+<td>Authenticated</td>
+<td>Payment details</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/</code></td>
+<td>ADMIN</td>
+<td>All payments</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/mpesa/query/{checkoutRequestId}</code></td>
+<td>ADMIN</td>
+<td>Query M-PESA status</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/verify/{orderId}</code></td>
+<td>Authenticated</td>
+<td>Verify payment status</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/{paymentId}/refund</code></td>
+<td>ADMIN</td>
+<td>Process refund</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/{paymentId}/cancel</code></td>
+<td>Authenticated</td>
+<td>Cancel payment</td>
+</tr>
+</tbody>
+</table>
+<h3 id="inventory-apis-apiv1inventory">7.10 Inventory APIs — <code>/api/v1/inventory</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GET</td>
+<td><code>/{productId}</code></td>
+<td>Public</td>
+<td>Get inventory info</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/{productId}/available</code></td>
+<td>Public</td>
+<td>Available stock</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/{productId}/total</code></td>
+<td>Public</td>
+<td>Total stock</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/{productId}/reserved</code></td>
+<td>Public</td>
+<td>Reserved stock</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/{productId}/check-availability</code></td>
+<td>Public</td>
+<td>Check if available</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/{productId}/low-stock</code></td>
+<td>Public</td>
+<td>Low stock check</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/low-stock</code></td>
+<td>ADMIN/SELLER</td>
+<td>All low-stock products</td>
+</tr>
+<tr class="even">
+<td>PUT</td>
+<td><code>/{productId}</code></td>
+<td>ADMIN/SELLER</td>
+<td>Update inventory</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/{productId}/restock</code></td>
+<td>ADMIN/SELLER</td>
+<td>Restock product</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/{productId}/reserve</code></td>
+<td>ADMIN/SELLER/SYSTEM</td>
+<td>Reserve stock</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/{productId}/release</code></td>
+<td>ADMIN/SELLER/SYSTEM</td>
+<td>Release reservation</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/{productId}/confirm</code></td>
+<td>ADMIN/SELLER/SYSTEM</td>
+<td>Confirm reservation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="coupon-apis-apiv1coupons">7.11 Coupon APIs — <code>/api/v1/coupons</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GET</td>
+<td><code>/validate?code=</code></td>
+<td>Public</td>
+<td>Validate coupon code</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/</code></td>
+<td>ADMIN</td>
+<td>List all coupons</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/active</code></td>
+<td>ADMIN</td>
+<td>Active coupons</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/{id}</code></td>
+<td>ADMIN</td>
+<td>Coupon details</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/</code></td>
+<td>ADMIN</td>
+<td>Create coupon</td>
+</tr>
+<tr class="even">
+<td>PUT</td>
+<td><code>/{id}</code></td>
+<td>ADMIN</td>
+<td>Update coupon</td>
+</tr>
+<tr class="odd">
+<td>DELETE</td>
+<td><code>/{id}</code></td>
+<td>ADMIN</td>
+<td>Delete coupon</td>
+</tr>
+</tbody>
+</table>
+<h3 id="flash-deal-apis-apiv1flash-deals">7.12 Flash Deal APIs — <code>/api/v1/flash-deals</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GET</td>
+<td><code>/</code></td>
+<td>Public</td>
+<td>All flash deals</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/active</code></td>
+<td>Public</td>
+<td>Currently active deals</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/upcoming</code></td>
+<td>Public</td>
+<td>Upcoming deals</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/{id}</code></td>
+<td>Public</td>
+<td>Deal details</td>
+</tr>
+<tr class="odd">
+<td>POST</td>
+<td><code>/</code></td>
+<td>ADMIN</td>
+<td>Create flash deal</td>
+</tr>
+<tr class="even">
+<td>PUT</td>
+<td><code>/{id}</code></td>
+<td>ADMIN</td>
+<td>Update deal</td>
+</tr>
+<tr class="odd">
+<td>DELETE</td>
+<td><code>/{id}</code></td>
+<td>ADMIN</td>
+<td>Delete deal</td>
+</tr>
+</tbody>
+</table>
+<h3 id="review-apis-apiv1reviews">7.13 Review APIs — <code>/api/v1/reviews</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GET</td>
+<td><code>/product/{productId}</code></td>
+<td>Public</td>
+<td>Reviews for product</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/{reviewId}</code></td>
+<td>Public</td>
+<td>Review details</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/pending</code></td>
+<td>ADMIN</td>
+<td>Pending moderation</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/</code></td>
+<td>CUSTOMER</td>
+<td>Create review</td>
+</tr>
+<tr class="odd">
+<td>PUT</td>
+<td><code>/{reviewId}</code></td>
+<td>CUSTOMER</td>
+<td>Update own review</td>
+</tr>
+<tr class="even">
+<td>DELETE</td>
+<td><code>/{reviewId}</code></td>
+<td>CUSTOMER</td>
+<td>Delete own review</td>
+</tr>
+<tr class="odd">
+<td>PUT</td>
+<td><code>/{reviewId}/approve</code></td>
+<td>ADMIN</td>
+<td>Approve review</td>
+</tr>
+<tr class="even">
+<td>PUT</td>
+<td><code>/{reviewId}/reject</code></td>
+<td>ADMIN</td>
+<td>Reject review</td>
+</tr>
+<tr class="odd">
+<td>PUT</td>
+<td><code>/{reviewId}/respond</code></td>
+<td>ADMIN</td>
+<td>Admin response</td>
+</tr>
+<tr class="even">
+<td>POST</td>
+<td><code>/{reviewId}/vote</code></td>
+<td>CUSTOMER</td>
+<td>Vote helpful/unhelpful</td>
+</tr>
+</tbody>
+</table>
+<h3 id="shipping-apis-apiv1shipping">7.14 Shipping APIs — <code>/api/v1/shipping</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>POST</td>
+<td><code>/create</code></td>
+<td>ADMIN</td>
+<td>Create shipment</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/</code></td>
+<td>ADMIN</td>
+<td>All shipments</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/{id}</code></td>
+<td>Authenticated</td>
+<td>Shipment details</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/order/{orderId}</code></td>
+<td>Authenticated</td>
+<td>Shipment for order</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/tracking/{trackingNumber}</code></td>
+<td>Authenticated</td>
+<td>Track by number</td>
+</tr>
+<tr class="even">
+<td>PUT</td>
+<td><code>/{id}/status</code></td>
+<td>ADMIN</td>
+<td>Update shipping status</td>
+</tr>
+</tbody>
+</table>
+<h3 id="address-apis-apiv1addresses">7.15 Address APIs — <code>/api/v1/addresses</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>POST</td>
+<td><code>/</code></td>
+<td>CUSTOMER</td>
+<td>Create address</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/</code></td>
+<td>CUSTOMER</td>
+<td>List my addresses</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/{addressId}</code></td>
+<td>CUSTOMER</td>
+<td>Get address</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/default</code></td>
+<td>CUSTOMER</td>
+<td>Get default address</td>
+</tr>
+<tr class="odd">
+<td>PUT</td>
+<td><code>/{addressId}</code></td>
+<td>CUSTOMER</td>
+<td>Update address</td>
+</tr>
+<tr class="even">
+<td>PUT</td>
+<td><code>/{addressId}/default</code></td>
+<td>CUSTOMER</td>
+<td>Set as default</td>
+</tr>
+<tr class="odd">
+<td>DELETE</td>
+<td><code>/{addressId}</code></td>
+<td>CUSTOMER</td>
+<td>Delete address</td>
+</tr>
+</tbody>
+</table>
+<h3 id="notification-apis-apiv1notifications">7.16 Notification APIs — <code>/api/v1/notifications</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>POST</td>
+<td><code>/send</code></td>
+<td>Authenticated</td>
+<td>Send notification</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/user/{userId}</code></td>
+<td>Authenticated</td>
+<td>Get user notifications</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/user/{userId}/unread</code></td>
+<td>Authenticated</td>
+<td>Unread count</td>
+</tr>
+<tr class="even">
+<td>PATCH</td>
+<td><code>/{id}/read</code></td>
+<td>Authenticated</td>
+<td>Mark as read</td>
+</tr>
+<tr class="odd">
+<td>PATCH</td>
+<td><code>/user/{userId}/read-all</code></td>
+<td>Authenticated</td>
+<td>Mark all read</td>
+</tr>
+</tbody>
+</table>
+<h3 id="user-management-apis-apiv1users">7.17 User Management APIs — <code>/api/v1/users</code></h3>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Endpoint</th>
+<th>Auth</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GET</td>
+<td><code>/profile</code></td>
+<td>Authenticated</td>
+<td>Get own profile</td>
+</tr>
+<tr class="even">
+<td>PUT</td>
+<td><code>/profile</code></td>
+<td>Authenticated</td>
+<td>Update profile</td>
+</tr>
+<tr class="odd">
+<td>PUT</td>
+<td><code>/profile/change-password</code></td>
+<td>Authenticated</td>
+<td>Change password</td>
+</tr>
+<tr class="even">
+<td>GET</td>
+<td><code>/admin/</code></td>
+<td>ADMIN</td>
+<td>List all users</td>
+</tr>
+<tr class="odd">
+<td>GET</td>
+<td><code>/admin/{userId}</code></td>
+<td>ADMIN</td>
+<td>Get user by ID</td>
+</tr>
+<tr class="even">
+<td>PUT</td>
+<td><code>/admin/{userId}/role</code></td>
+<td>ADMIN</td>
+<td>Change user role</td>
+</tr>
+<tr class="odd">
+<td>PUT</td>
+<td><code>/admin/{userId}/status</code></td>
+<td>ADMIN</td>
+<td>Enable/disable user</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="shopping-cart-kilimall-style-features">8. Shopping Cart — Kilimall-Style Features</h2>
+<h3 id="feature-overview">8.1 Feature Overview</h3>
+<p>The cart system mirrors <strong>Kilimall’s</strong> shopping experience:</p>
+<pre><code>┌─────────────────────────────────────────────────┐
+│                  SHOPPING CART                    │
+│                                                  │
+│  ☑ iPhone 15 Pro - KES 189,999                  │
+│    Qty: 1  │ Color: Space Black │ ✎ Notes       │
+│    [Save for Later] [Remove]                     │
+│                                                  │
+│  ☑ Samsung Galaxy Buds - KES 12,999             │
+│    Qty: 2  │ Selected                           │
+│    [Save for Later] [Remove]                     │
+│                                                  │
+│  ☐ USB-C Cable - KES 499                        │
+│    Qty: 3  │ NOT selected for checkout           │
+│                                                  │
+│  ──── Saved for Later (1) ────                   │
+│  📌 Wireless Mouse - KES 2,999                   │
+│    [Move to Cart]                                │
+│                                                  │
+│  ─────────────────────────                       │
+│  Coupon: SAVE10 applied (-10%)                   │
+│  Selected Items: KES 215,997                     │
+│  Estimated Shipping: KES 500                     │
+│  Total Savings: KES 21,600                       │
+│  ─────────────────────────                       │
+│  [Select All] [Deselect All] [Bulk Remove]       │
+│  [🛒 Checkout Selected Items]                    │
+└─────────────────────────────────────────────────┘</code></pre>
+<h3 id="cart-features-matrix">8.2 Cart Features Matrix</h3>
+<table>
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 38%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Description</th>
+<th>Endpoint</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Item Selection</strong></td>
+<td>Toggle items for checkout (☑/☐)</td>
+<td><code>PATCH /cart/items/select</code></td>
+</tr>
+<tr class="even">
+<td><strong>Select All / Deselect All</strong></td>
+<td>Batch selection</td>
+<td><code>POST /cart/items/select-all</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Save for Later</strong></td>
+<td>Move item out of active cart</td>
+<td><code>POST /cart/items/{id}/save-for-later</code></td>
+</tr>
+<tr class="even">
+<td><strong>Move to Cart</strong></td>
+<td>Restore saved item</td>
+<td><code>POST /cart/items/{id}/move-to-cart</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Item Notes</strong></td>
+<td>Color/size/variant specs</td>
+<td><code>PATCH /cart/items/{id}/notes</code></td>
+</tr>
+<tr class="even">
+<td><strong>Bulk Remove</strong></td>
+<td>Delete multiple items at once</td>
+<td><code>DELETE /cart/items/bulk</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Coupon Application</strong></td>
+<td>Apply/remove discount codes</td>
+<td><code>POST /cart/coupon</code></td>
+</tr>
+<tr class="even">
+<td><strong>Shipping Estimate</strong></td>
+<td>Calculate shipping cost</td>
+<td><code>GET /cart/shipping-estimate</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Guest Cart</strong></td>
+<td>Browse &amp; add without login</td>
+<td><code>POST /cart/guest/items</code></td>
+</tr>
+<tr class="even">
+<td><strong>Cart Merge</strong></td>
+<td>Merge guest → user cart on login</td>
+<td><code>POST /cart/merge</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Price Tracking</strong></td>
+<td>Detect price changes since adding</td>
+<td><code>price_at_addition</code> field</td>
+</tr>
+<tr class="even">
+<td><strong>Max Buy Quantity</strong></td>
+<td>Per-product purchase limits</td>
+<td><code>max_buy_quantity</code> field</td>
+</tr>
+<tr class="odd">
+<td><strong>Cart Expiry</strong></td>
+<td>Auto-expire stale carts</td>
+<td><code>CartExpiryService</code> scheduled</td>
+</tr>
+<tr class="even">
+<td><strong>Optimistic Locking</strong></td>
+<td>Concurrent update protection</td>
+<td><code>@Version</code> on CartItem</td>
+</tr>
+</tbody>
+</table>
+<h3 id="checkout-flow-kilimall-style">8.3 Checkout Flow (Kilimall-Style)</h3>
+<pre><code>1. Customer selects items in cart (☑ checkbox)
+2. POST /api/v1/orders/checkout
+   └─ Only selected items are checked out
+   └─ Validates stock availability
+   └─ Applies coupon if present
+   └─ Creates Order + OrderItems
+   └─ Reserves inventory
+   └─ Removes checked-out items from cart
+3. POST /api/v1/payments/initiate
+   └─ Sends M-PESA STK Push to customer&#39;s phone
+4. Customer enters M-PESA PIN on phone
+5. Safaricom → POST /api/v1/payments/mpesa/callback
+   └─ Updates payment status
+   └─ Confirms inventory reservation
+   └─ Sends order confirmation notification</code></pre>
+<hr />
+<h2 id="payment-integration-m-pesa">9. Payment Integration — M-PESA</h2>
+<h3 id="overview">9.1 Overview</h3>
+<p>Integration with <strong>Safaricom M-PESA</strong> Daraja API for mobile money payments:</p>
+<ul>
+<li><strong>STK Push</strong> — Customer receives payment prompt on their phone</li>
+<li><strong>Callback Processing</strong> — Async webhook from Safaricom</li>
+<li><strong>Transaction Querying</strong> — Check payment status</li>
+<li><strong>Idempotency</strong> — Prevents duplicate charges</li>
+</ul>
+<h3 id="payment-flow">9.2 Payment Flow</h3>
+<pre><code>┌──────────┐         ┌──────────┐         ┌───────────┐
+│  Client  │         │  Server  │         │ Safaricom │
+│ (App/Web)│         │          │         │   M-PESA  │
+└────┬─────┘         └────┬─────┘         └─────┬─────┘
+     │  POST /payments/    │                     │
+     │  initiate           │                     │
+     │────────────────────&gt;│                     │
+     │                     │  OAuth Token        │
+     │                     │────────────────────&gt;│
+     │                     │&lt;────────────────────│
+     │                     │                     │
+     │                     │  STK Push Request   │
+     │                     │────────────────────&gt;│
+     │                     │&lt;─── CheckoutReqID ──│
+     │&lt;── &quot;Check phone&quot; ───│                     │
+     │                     │                     │
+     │   ┌─────────────────────────────────┐     │
+     │   │ Customer enters PIN on phone    │     │
+     │   └─────────────────────────────────┘     │
+     │                     │                     │
+     │                     │  POST /mpesa/       │
+     │                     │  callback           │
+     │                     │&lt;────────────────────│
+     │                     │  { ResultCode,      │
+     │                     │    MpesaReceipt }   │
+     │                     │                     │
+     │                     │──&gt; Update payment   │
+     │                     │──&gt; Confirm order    │
+     │                     │──&gt; Send notification│
+     │                     │                     │
+     │  GET /payments/     │                     │
+     │  verify/{orderId}   │                     │
+     │────────────────────&gt;│                     │
+     │&lt;── payment status ──│                     │</code></pre>
+<h3 id="m-pesa-configuration">9.3 M-PESA Configuration</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>mpesa.api.url</code></td>
+<td>Safaricom API base URL (sandbox/production)</td>
+</tr>
+<tr class="even">
+<td><code>mpesa.consumer.key</code></td>
+<td>Daraja app consumer key</td>
+</tr>
+<tr class="odd">
+<td><code>mpesa.consumer.secret</code></td>
+<td>Daraja app consumer secret</td>
+</tr>
+<tr class="even">
+<td><code>mpesa.shortcode</code></td>
+<td>Business short code</td>
+</tr>
+<tr class="odd">
+<td><code>mpesa.passkey</code></td>
+<td>STK Push passkey</td>
+</tr>
+<tr class="even">
+<td><code>mpesa.callback.url</code></td>
+<td>Callback URL (must be public, use ngrok for dev)</td>
+</tr>
+<tr class="odd">
+<td><code>mpesa.callback.secret</code></td>
+<td>HMAC secret for callback verification</td>
+</tr>
+<tr class="even">
+<td><code>mpesa.security.allowed-ips</code></td>
+<td>Safaricom IP whitelist</td>
+</tr>
+</tbody>
+</table>
+<h3 id="payment-security">9.4 Payment Security</h3>
+<ul>
+<li><strong>IP Whitelisting</strong> — Only Safaricom IPs can call callbacks</li>
+<li><strong>HMAC Signature Verification</strong> — Optional callback signature check</li>
+<li><strong>Idempotency Keys</strong> — Unique key per payment prevents duplicates</li>
+<li><strong>Amount Limits</strong> — KES 1 minimum, KES 150,000 maximum</li>
+<li><strong>Rate Limiting</strong> — 5 payment requests per minute per user</li>
+</ul>
+<hr />
+<h2 id="caching-strategy-redis">10. Caching Strategy — Redis</h2>
+<h3 id="cache-configuration">10.1 Cache Configuration</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Cache Name</th>
+<th>TTL</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>products</code></td>
+<td>30 minutes</td>
+<td>Product catalog</td>
+</tr>
+<tr class="even">
+<td><code>categories</code></td>
+<td>2 hours</td>
+<td>Category tree</td>
+</tr>
+<tr class="odd">
+<td><code>users</code></td>
+<td>15 minutes</td>
+<td>User profiles</td>
+</tr>
+<tr class="even">
+<td><code>mpesaToken</code></td>
+<td>50 minutes</td>
+<td>M-PESA OAuth token</td>
+</tr>
+<tr class="odd">
+<td><code>default</code></td>
+<td>10 minutes</td>
+<td>Everything else</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-usage">10.2 Redis Usage</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Key Pattern</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Caching</strong></td>
+<td><code>ecommerce:{cacheName}:{key}</code></td>
+<td>Response caching</td>
+</tr>
+<tr class="even">
+<td><strong>Rate Limiting</strong></td>
+<td><code>security:ratelimit:{ip}:{window}</code></td>
+<td>Request throttling</td>
+</tr>
+<tr class="odd">
+<td><strong>IP Blacklist</strong></td>
+<td><code>security:blacklist:{ip}</code></td>
+<td>Blocked IPs</td>
+</tr>
+</tbody>
+</table>
+<h3 id="serialization-1">10.3 Serialization</h3>
+<p>Uses <strong>Jackson 3.x</strong> <code>JsonMapper</code> with polymorphic type info for correct deserialization: - Type info embedded as <code>@class</code> property in JSON - <code>DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS</code> disabled for ISO-8601 dates - <code>BasicPolymorphicTypeValidator</code> for secure deserialization</p>
+<hr />
+<h2 id="deployment-guide">11. Deployment Guide</h2>
+<h3 id="prerequisites">11.1 Prerequisites</h3>
+<ul>
+<li>Java 21+ (LTS)</li>
+<li>MySQL 8.0+</li>
+<li>Redis 7.0+</li>
+<li>Maven 3.8+</li>
+</ul>
+<h3 id="quick-start">11.2 Quick Start</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Clone</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/oumapeter757-ai/e-Commerce_management_system.git</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> e-Commerce_management_system</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Configure environment</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> .env.example .env</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Edit .env with your database, Redis, M-PESA credentials</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Start MySQL &amp; Redis</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl start mysql redis</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Create database</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">-u</span> root <span class="at">-p</span> <span class="at">-e</span> <span class="st">&quot;CREATE DATABASE ecommerce_db DEFAULT CHARSET utf8mb4;&quot;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Build &amp; Run</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="ex">./mvnw</span> clean spring-boot:run</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co"># App starts on http://localhost:8080</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Swagger UI: http://localhost:8080/swagger-ui.html</span></span></code></pre></div>
+<h3 id="fresh-database-setup-flyway">11.3 Fresh Database Setup (Flyway)</h3>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Option 1: Auto-create (JDBC URL has createDatabaseIfNotExist=true)</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./mvnw</span> spring-boot:run</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Option 2: Full reset</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./flyway-repair.sh</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="ex">./mvnw</span> spring-boot:run</span></code></pre></div>
+<h3 id="m-pesa-callback-development">11.4 M-PESA Callback (Development)</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use ngrok for public callback URL</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ngrok</span> http 8080</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Set FRONTEND_URL in .env to ngrok URL</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># e.g., FRONTEND_URL=https://abc123.ngrok-free.app</span></span></code></pre></div>
+<hr />
+<h2 id="environment-variables">12. Environment Variables</h2>
+<p>All sensitive configuration is stored in <code>.env</code>:</p>
+<table>
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 38%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>DB_HOST</code></td>
+<td>MySQL host</td>
+<td><code>localhost</code></td>
+</tr>
+<tr class="even">
+<td><code>DB_PORT</code></td>
+<td>MySQL port</td>
+<td><code>3306</code></td>
+</tr>
+<tr class="odd">
+<td><code>DB_NAME</code></td>
+<td>Database name</td>
+<td><code>ecommerce_db</code></td>
+</tr>
+<tr class="even">
+<td><code>DB_USER</code></td>
+<td>Database user</td>
+<td><code>peter</code></td>
+</tr>
+<tr class="odd">
+<td><code>DB_PASSWORD</code></td>
+<td>Database password</td>
+<td><code>****</code></td>
+</tr>
+<tr class="even">
+<td><code>REDIS_PASSWORD</code></td>
+<td>Redis password (empty if none)</td>
+<td>`<code>| |</code>MAIL_HOST<code>| SMTP host |</code>smtp.gmail.com<code>| |</code>MAIL_PORT<code>| SMTP port |</code>465<code>| |</code>MAIL_USERNAME<code>| Email address |</code>company@gmail.com<code>| |</code>MAIL_PASSWORD<code>| Gmail App Password |</code>xxxx xxxx xxxx xxxx<code>| |</code>JWT_SECRET<code>| 256-bit JWT signing key |</code>404E6352…<code>| |</code>MPESA_CONSUMER_KEY<code>| Daraja consumer key |</code>RrATT…<code>| |</code>MPESA_CONSUMER_SECRET<code>| Daraja consumer secret |</code>zvFyc…<code>| |</code>MPESA_SHORTCODE<code>| Business shortcode |</code>174379<code>| |</code>MPESA_PASSKEY<code>| STK Push passkey |</code>bfb27…<code>| |</code>MPESA_CALLBACK_SECRET<code>| HMAC callback secret |</code>MySuper…<code>| |</code>FRONTEND_URL<code>| Frontend/callback base URL |</code>https://….ngrok-free.dev`</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="error-handling">13. Error Handling</h2>
+<h3 id="standard-error-response">13.1 Standard Error Response</h3>
+<p>All errors return a consistent JSON structure:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;success&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;message&quot;</span><span class="fu">:</span> <span class="st">&quot;Product not found with id: 123&quot;</span><span class="fu">,</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;data&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;timestamp&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-02-24T10:30:00&quot;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="http-status-codes">13.2 HTTP Status Codes</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Code</th>
+<th>Meaning</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>200</td>
+<td>OK</td>
+<td>Successful GET/PUT/PATCH</td>
+</tr>
+<tr class="even">
+<td>201</td>
+<td>Created</td>
+<td>Successful POST</td>
+</tr>
+<tr class="odd">
+<td>204</td>
+<td>No Content</td>
+<td>Successful DELETE</td>
+</tr>
+<tr class="even">
+<td>400</td>
+<td>Bad Request</td>
+<td>Invalid input, validation error</td>
+</tr>
+<tr class="odd">
+<td>401</td>
+<td>Unauthorized</td>
+<td>Missing/invalid JWT token</td>
+</tr>
+<tr class="even">
+<td>403</td>
+<td>Forbidden</td>
+<td>Insufficient role permissions</td>
+</tr>
+<tr class="odd">
+<td>404</td>
+<td>Not Found</td>
+<td>Resource doesn’t exist</td>
+</tr>
+<tr class="even">
+<td>409</td>
+<td>Conflict</td>
+<td>Duplicate resource, concurrency</td>
+</tr>
+<tr class="odd">
+<td>422</td>
+<td>Unprocessable</td>
+<td>Business rule violation</td>
+</tr>
+<tr class="even">
+<td>429</td>
+<td>Too Many Requests</td>
+<td>Rate limit exceeded</td>
+</tr>
+<tr class="odd">
+<td>500</td>
+<td>Internal Error</td>
+<td>Server-side exception</td>
+</tr>
+</tbody>
+</table>
+<h3 id="validation">13.3 Validation</h3>
+<p>All request DTOs use Jakarta Validation:</p>
+<ul>
+<li><code>@NotBlank</code>, <code>@NotNull</code> — Required fields</li>
+<li><code>@Size(min, max)</code> — String length limits</li>
+<li><code>@Min</code>, <code>@Max</code> — Numeric range</li>
+<li><code>@Email</code> — Email format</li>
+<li><code>@Pattern</code> — Regex validation</li>
+<li><code>@Positive</code> — Must be &gt; 0</li>
+<li>Custom <code>InputSanitizer</code> — Strips HTML/XSS</li>
+</ul>
+<hr />
+<h2 id="performance-scalability">14. Performance &amp; Scalability</h2>
+<h3 id="database-optimization">14.1 Database Optimization</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Technique</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Connection Pooling</strong></td>
+<td>HikariCP (10 max, 5 min-idle)</td>
+</tr>
+<tr class="even">
+<td><strong>Batch Operations</strong></td>
+<td>Hibernate batch size 20, ordered inserts/updates</td>
+</tr>
+<tr class="odd">
+<td><strong>Indexes</strong></td>
+<td>On all foreign keys, search fields, status columns</td>
+</tr>
+<tr class="even">
+<td><strong>Lazy Loading</strong></td>
+<td><code>FetchType.LAZY</code> on all <code>@ManyToOne</code> relationships</td>
+</tr>
+<tr class="odd">
+<td><strong>Open-In-View</strong></td>
+<td>Disabled (<code>spring.jpa.open-in-view: false</code>)</td>
+</tr>
+<tr class="even">
+<td><strong>Optimistic Locking</strong></td>
+<td><code>@Version</code> on Cart, CartItem, Inventory</td>
+</tr>
+</tbody>
+</table>
+<h3 id="caching">14.2 Caching</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Layer</th>
+<th>Technology</th>
+<th>TTL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Product catalog</td>
+<td>Redis</td>
+<td>30 min</td>
+</tr>
+<tr class="even">
+<td>Category tree</td>
+<td>Redis</td>
+<td>2 hours</td>
+</tr>
+<tr class="odd">
+<td>M-PESA tokens</td>
+<td>Redis</td>
+<td>50 min</td>
+</tr>
+<tr class="even">
+<td>Rate limit counters</td>
+<td>Redis</td>
+<td>1-60 min</td>
+</tr>
+</tbody>
+</table>
+<h3 id="async-processing">14.3 Async Processing</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Task</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>M-PESA callbacks</td>
+<td><code>CompletableFuture.runAsync()</code></td>
+</tr>
+<tr class="even">
+<td>Email sending</td>
+<td><code>@Async</code> with custom thread pool</td>
+</tr>
+<tr class="odd">
+<td>Cart expiry cleanup</td>
+<td><code>@Scheduled</code> service</td>
+</tr>
+<tr class="even">
+<td>Token cleanup</td>
+<td><code>TokenCleanupService</code> scheduled</td>
+</tr>
+</tbody>
+</table>
+<h3 id="response-compression">14.4 Response Compression</h3>
+<ul>
+<li>HTTP compression enabled (<code>server.compression.enabled: true</code>)</li>
+<li>Applicable for JSON responses &gt; 2KB</li>
+</ul>
+<hr />
+<h2 id="future-roadmap">15. Future Roadmap</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Priority</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>WebSocket real-time notifications</td>
+<td>High</td>
+<td>Planned</td>
+</tr>
+<tr class="even">
+<td>Elasticsearch for product search</td>
+<td>High</td>
+<td>Planned</td>
+</tr>
+<tr class="odd">
+<td>Multi-vendor marketplace</td>
+<td>Medium</td>
+<td>Planned</td>
+</tr>
+<tr class="even">
+<td>Docker &amp; Kubernetes deployment</td>
+<td>High</td>
+<td>Planned</td>
+</tr>
+<tr class="odd">
+<td>CI/CD pipeline (GitHub Actions)</td>
+<td>High</td>
+<td>Planned</td>
+</tr>
+<tr class="even">
+<td>Image upload (S3/CloudFront)</td>
+<td>Medium</td>
+<td>Planned</td>
+</tr>
+<tr class="odd">
+<td>SMS notifications (Africa’s Talking)</td>
+<td>Medium</td>
+<td>Planned</td>
+</tr>
+<tr class="even">
+<td>Order tracking map integration</td>
+<td>Low</td>
+<td>Planned</td>
+</tr>
+<tr class="odd">
+<td>A/B testing for flash deals</td>
+<td>Low</td>
+<td>Planned</td>
+</tr>
+<tr class="even">
+<td>GraphQL API layer</td>
+<td>Low</td>
+<td>Planned</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-a-order-status-workflow">Appendix A: Order Status Workflow</h2>
+<pre><code>PENDING → CONFIRMED → PROCESSING → SHIPPED → DELIVERED
+    │         │           │
+    ▼         ▼           ▼
+ CANCELLED  CANCELLED   RETURNED</code></pre>
+<h2 id="appendix-b-payment-status-workflow">Appendix B: Payment Status Workflow</h2>
+<pre><code>PENDING → COMPLETED
+    │
+    ├──→ FAILED
+    ├──→ CANCELLED
+    └──→ REFUNDED</code></pre>
+<hr />
+<p><strong>Document Version:</strong> 1.0.0<br />
+<strong>Last Updated:</strong> February 24, 2026<br />
+<strong>Prepared for:</strong> Client Presentation<br />
+<strong>Confidentiality:</strong> Internal Use Only</p>
+<hr />
+<p><em>© 2026 PetersCode Engineering. All rights reserved.</em></p>
+</body>
+</html>
