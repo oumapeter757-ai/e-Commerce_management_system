@@ -6,6 +6,7 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -32,196 +33,133 @@ public class EmailServiceImpl implements EmailService {
     @Async
     @Override
     public void sendVerificationEmail(String to, String username, String token) {
-        try {
+        String verificationLink = frontendUrl + "/api/v1/auth/verify-email?token=" + token;
 
-            String verificationLink = frontendUrl + "/api/v1/auth/verify-email?token=" + token;
+        String body = buildEmailTemplate(
+                username,
+                "Email Verification Required",
+                "Thank you for registering. Please verify your email to activate your account.",
+                "Click the button below to verify. This link expires in 24 hours.",
+                verificationLink,
+                "Verify Email Address"
+        );
 
-            String subject = "Verify Your Email Address - E-commerce Platform";
-            String body = buildEmailTemplate(
-                    username,
-                    "Email Verification Required",
-                    "Thank you for registering with our E-commerce Platform. Please verify your email address to activate your account.",
-                    "Click the button below to verify your email address. This link will expire in 24 hours.",
-                    verificationLink,
-                    "Verify Email Address"
-            );
-
-            sendHtmlEmail(to, subject, body);
-            log.info("Verification email sent to: {}", to);
-
-        } catch (Exception e) {
-            log.error("Failed to send verification email to: {}", to, e);
-        }
+        sendHtmlEmailSafe(to, "Verify Your Email Address - E-commerce Platform", body);
     }
 
     @Async
     @Override
     public void sendPasswordResetEmail(String to, String username, String token) {
-        try {
-            String resetLink = frontendUrl + "/reset-password?token=" + token;
+        String resetLink = frontendUrl + "/reset-password?token=" + token;
 
-            String subject = "Password Reset Request - E-commerce Platform";
-            String body = buildEmailTemplate(
-                    username,
-                    "Password Reset Request",
-                    "We received a request to reset your password. If you didn't make this request, please ignore this email.",
-                    "Click the button below to reset your password. This link will expire in 1 hour.",
-                    resetLink,
-                    "Reset Password"
-            );
+        String body = buildEmailTemplate(
+                username,
+                "Password Reset Request",
+                "We received a request to reset your password.",
+                "Click the button below to reset. This link expires in 1 hour.",
+                resetLink,
+                "Reset Password"
+        );
 
-            sendHtmlEmail(to, subject, body);
-            log.info("Password reset email sent to: {}", to);
-
-        } catch (Exception e) {
-            log.error("Failed to send password reset email to: {}", to, e);
-        }
+        sendHtmlEmailSafe(to, "Password Reset Request - E-commerce Platform", body);
     }
 
     @Async
     @Override
     public void sendWelcomeEmail(String to, String username) {
-        try {
-            String subject = "Welcome to E-commerce Platform!";
-            String body = buildEmailTemplate(
-                    username,
-                    "Welcome to Our Platform!",
-                    "Your account has been successfully created and verified. You can now start shopping!",
-                    "We're excited to have you on board. Explore our products and enjoy exclusive deals.",
-                    frontendUrl + "/products",
-                    "Start Shopping"
-            );
+        String body = buildEmailTemplate(
+                username,
+                "Welcome to Our Platform!",
+                "Your account has been successfully verified.",
+                "We're excited to have you. Explore our products and enjoy exclusive deals.",
+                frontendUrl + "/products",
+                "Start Shopping"
+        );
 
-            sendHtmlEmail(to, subject, body);
-            log.info("Welcome email sent to: {}", to);
-
-        } catch (Exception e) {
-            log.error("Failed to send welcome email to: {}", to, e);
-        }
+        sendHtmlEmailSafe(to, "Welcome to E-commerce Platform!", body);
     }
 
     @Async
     @Override
     public void sendLoginNotification(String to, String username, String ipAddress) {
-        try {
-            String loginTime = LocalDateTime.now().format(formatter);
+        String loginTime = LocalDateTime.now().format(formatter);
 
-            String subject = "New Login to Your Account - E-commerce Platform";
-            String body = buildNotificationTemplate(
-                    username,
-                    "New Login Detected",
-                    "We detected a new login to your account. If this was you, you can safely ignore this email.",
-                    "Login Details:",
-                    "Time: " + loginTime + "<br>" +
-                            "IP Address: " + ipAddress, // Removed undefined 'location'
-                    "If you don't recognize this activity, please reset your password immediately."
-            );
+        String body = buildNotificationTemplate(
+                username,
+                "New Login Detected",
+                "We detected a new login to your account.",
+                "Login Details:",
+                "Time: " + loginTime + "<br>IP Address: " + ipAddress,
+                "If you don't recognize this activity, reset your password immediately."
+        );
 
-            sendHtmlEmail(to, subject, body);
-            log.info("Login notification sent to: {}", to);
-
-        } catch (Exception e) {
-            log.error("Failed to send login notification to: {}", to, e);
-        }
+        sendHtmlEmailSafe(to, "New Login to Your Account", body);
     }
 
     @Async
     @Override
     public void sendPasswordChangeNotification(String to, String username) {
-        try {
-            String changeTime = LocalDateTime.now().format(formatter);
+        String changeTime = LocalDateTime.now().format(formatter);
 
-            String subject = "Password Changed Successfully - E-commerce Platform";
-            String body = buildNotificationTemplate(
-                    username,
-                    "Password Changed",
-                    "Your password has been changed successfully.",
-                    "Change Details:",
-                    "Time: " + changeTime,
-                    "If you didn't make this change, please contact our support team immediately."
-            );
+        String body = buildNotificationTemplate(
+                username,
+                "Password Changed",
+                "Your password has been changed successfully.",
+                "Change Details:",
+                "Time: " + changeTime,
+                "If you didn't make this change, contact support immediately."
+        );
 
-            sendHtmlEmail(to, subject, body);
-            log.info("Password change notification sent to: {}", to);
-
-        } catch (Exception e) {
-            log.error("Failed to send password change notification to: {}", to, e);
-        }
+        sendHtmlEmailSafe(to, "Password Changed Successfully", body);
     }
 
     @Async
     @Override
     public void sendAccountLockedNotification(String to, String username, String reason) {
-        try {
-            String lockTime = LocalDateTime.now().format(formatter);
+        String lockTime = LocalDateTime.now().format(formatter);
 
-            String subject = "Account Temporarily Locked - E-commerce Platform";
-            String body = buildNotificationTemplate(
-                    username,
-                    "Account Locked",
-                    "Your account has been temporarily locked for security reasons.",
-                    "Lock Details:",
-                    "Time: " + lockTime + "<br>" +
-                            "Reason: " + reason,
-                    "Your account will be automatically unlocked in 30 minutes. If you need immediate assistance, please contact support."
-            );
+        String body = buildNotificationTemplate(
+                username,
+                "Account Locked",
+                "Your account has been temporarily locked for security reasons.",
+                "Lock Details:",
+                "Time: " + lockTime + "<br>Reason: " + reason,
+                "Your account will unlock automatically in 30 minutes."
+        );
 
-            sendHtmlEmail(to, subject, body);
-            log.info("Account locked notification sent to: {}", to);
-
-        } catch (Exception e) {
-            log.error("Failed to send account locked notification to: {}", to, e);
-        }
+        sendHtmlEmailSafe(to, "Account Temporarily Locked", body);
     }
 
     @Async
     @Override
     public void sendTwoFactorCode(String to, String code, String username) {
-        try {
-            String subject = "Your Two-Factor Authentication Code - E-commerce Platform";
-            String body = buildNotificationTemplate(
-                    username,
-                    "Two-Factor Authentication",
-                    "You requested a two-factor authentication code. Use the code below to complete your login.",
-                    "Your Code:",
-                    "<div style='font-size: 32px; font-weight: bold; color: #4CAF50; text-align: center; padding: 20px; background: #f5f5f5; border-radius: 8px;'>" + code + "</div>",
-                    "This code will expire in 10 minutes. If you didn't request this code, please contact support immediately."
-            );
+        String codeHtml = "<div style='font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #4CAF50; text-align: center; padding: 20px; background: #f5f5f5; border-radius: 8px; margin: 20px 0;'>" + code + "</div>";
 
-            sendHtmlEmail(to, subject, body);
-            log.info("Two-factor code sent to: {}", to);
+        String body = buildNotificationTemplate(
+                username,
+                "Two-Factor Authentication",
+                "Use the code below to complete your login.",
+                "Your Code:",
+                codeHtml,
+                "This code expires in 10 minutes."
+        );
 
-        } catch (Exception e) {
-            log.error("Failed to send two-factor code to: {}", to, e);
-        }
+        sendHtmlEmailSafe(to, "Your Two-Factor Authentication Code", body);
     }
 
     @Override
     public boolean isValidGmailAddress(String email) {
-        if (email == null || email.trim().isEmpty()) {
-            return false;
-        }
-
-        email = email.toLowerCase().trim();
-
-        // Check if email ends with @gmail.com
-        if (!email.endsWith("@gmail.com")) {
-            log.warn("Invalid email domain: {}. Only Gmail addresses are allowed.", email);
-            return false;
-        }
-
-        // Basic email format validation
-        String emailRegex = "^[a-zA-Z0-9._%+-]+@gmail\\.com$";
-        boolean isValid = email.matches(emailRegex);
-
-        if (!isValid) {
-            log.warn("Invalid Gmail format: {}", email);
-        }
-
-        return isValid;
+        if (email == null || email.trim().isEmpty()) return false;
+        // Strict check: only allows actual gmail.com domain
+        return email.trim().toLowerCase().endsWith("@gmail.com");
     }
 
-    private void sendHtmlEmail(String to, String subject, String htmlBody) throws MessagingException {
+    /**
+     * Public method that THROWS exceptions.
+     * Use this when the caller needs to know if sending failed.
+     */
+    @Override
+    public void sendHtmlEmail(String to, String subject, String htmlBody) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -231,61 +169,82 @@ public class EmailServiceImpl implements EmailService {
         helper.setText(htmlBody, true);
 
         mailSender.send(message);
+        log.info("Email sent successfully to: {}", to);
     }
+
+    /**
+     * Internal Safe method for Async calls.
+     * SWALLOWS exceptions to prevent Async threads from crashing.
+     */
+    private void sendHtmlEmailSafe(String to, String subject, String htmlBody) {
+        try {
+            sendHtmlEmail(to, subject, htmlBody);
+        } catch (MessagingException | MailException e) {
+            log.error("Failed to send email to {}. Error: {}", to, e.getMessage());
+            // Optional: Add logic here to save failed emails to a database for retry
+        }
+    }
+
+    // --- HTML TEMPLATES (Java 15+ Text Blocks) ---
 
     private String buildEmailTemplate(String username, String title, String subtitle,
                                       String message, String actionUrl, String actionText) {
-        return "<!DOCTYPE html>" +
-                "<html><head><meta charset='UTF-8'></head>" +
-                "<body style='font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4;'>" +
-                "<div style='max-width: 600px; margin: 20px auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>" +
-                "<div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;'>" +
-                "<h1 style='color: white; margin: 0; font-size: 28px;'>E-commerce Platform</h1>" +
-                "</div>" +
-                "<div style='padding: 40px 30px;'>" +
-                "<h2 style='color: #333; margin-top: 0;'>Hello " + username + ",</h2>" +
-                "<h3 style='color: #555; font-weight: normal;'>" + title + "</h3>" +
-                "<p style='color: #666; line-height: 1.6; font-size: 16px;'>" + subtitle + "</p>" +
-                "<p style='color: #666; line-height: 1.6; font-size: 16px;'>" + message + "</p>" +
-                "<div style='text-align: center; margin: 30px 0;'>" +
-                "<a href='" + actionUrl + "' style='display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;'>" +
-                actionText +
-                "</a>" +
-                "</div>" +
-                "<p style='color: #999; font-size: 14px; margin-top: 30px;'>If the button doesn't work, copy and paste this link into your browser:</p>" +
-                "<p style='color: #667eea; font-size: 14px; word-break: break-all;'>" + actionUrl + "</p>" +
-                "</div>" +
-                "<div style='background: #f8f8f8; padding: 20px; text-align: center; border-top: 1px solid #eee;'>" +
-                "<p style='color: #999; font-size: 12px; margin: 0;'>© 2026 E-commerce Platform. All rights reserved.</p>" +
-                "<p style='color: #999; font-size: 12px; margin: 10px 0 0 0;'>This is an automated message, please do not reply.</p>" +
-                "</div>" +
-                "</div>" +
-                "</body></html>";
+        return """
+            <!DOCTYPE html>
+            <html>
+            <body style='font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4;'>
+                <div style='max-width: 600px; margin: 20px auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>
+                    <div style='background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%); padding: 30px; text-align: center;'>
+                        <h1 style='color: white; margin: 0; font-size: 28px;'>E-commerce Platform</h1>
+                    </div>
+                    <div style='padding: 40px 30px;'>
+                        <h2 style='color: #333; margin-top: 0;'>Hello %s,</h2>
+                        <h3 style='color: #555; font-weight: normal;'>%s</h3>
+                        <p style='color: #666; line-height: 1.6; font-size: 16px;'>%s</p>
+                        <p style='color: #666; line-height: 1.6; font-size: 16px;'>%s</p>
+                        <div style='text-align: center; margin: 30px 0;'>
+                            <a href='%s' style='display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%); color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;'>
+                                %s
+                            </a>
+                        </div>
+                        <p style='color: #999; font-size: 14px; margin-top: 30px;'>If the button doesn't work, copy this link:</p>
+                        <p style='color: #667eea; font-size: 14px; word-break: break-all;'>%s</p>
+                    </div>
+                    <div style='background: #f8f8f8; padding: 20px; text-align: center; border-top: 1px solid #eee;'>
+                        <p style='color: #999; font-size: 12px; margin: 0;'>© 2026 E-commerce Platform.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """.formatted(username, title, subtitle, message, actionUrl, actionText, actionUrl);
     }
 
     private String buildNotificationTemplate(String username, String title, String subtitle,
-                                             String detailsTitle, String details, String footer) {
-        return "<!DOCTYPE html>" +
-                "<html><head><meta charset='UTF-8'></head>" +
-                "<body style='font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4;'>" +
-                "<div style='max-width: 600px; margin: 20px auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>" +
-                "<div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;'>" +
-                "<h1 style='color: white; margin: 0; font-size: 28px;'>E-commerce Platform</h1>" +
-                "</div>" +
-                "<div style='padding: 40px 30px;'>" +
-                "<h2 style='color: #333; margin-top: 0;'>Hello " + username + ",</h2>" +
-                "<h3 style='color: #555; font-weight: normal;'>" + title + "</h3>" +
-                "<p style='color: #666; line-height: 1.6; font-size: 16px;'>" + subtitle + "</p>" +
-                "<div style='background: #f8f8f8; padding: 20px; border-radius: 6px; margin: 20px 0;'>" +
-                "<h4 style='margin-top: 0; color: #333;'>" + detailsTitle + "</h4>" +
-                "<p style='color: #666; line-height: 1.6; margin: 0;'>" + details + "</p>" +
-                "</div>" +
-                "<p style='color: #666; line-height: 1.6; font-size: 14px; margin-top: 20px;'>" + footer + "</p>" +
-                "</div>" +
-                "<div style='background: #f8f8f8; padding: 20px; text-align: center; border-top: 1px solid #eee;'>" +
-                "<p style='color: #999; font-size: 12px; margin: 0;'>© 2026 E-commerce Platform. All rights reserved.</p>" +
-                "</div>" +
-                "</div>" +
-                "</body></html>";
+                                             String detailsTitle, String detailsHtml, String footer) {
+        return """
+            <!DOCTYPE html>
+            <html>
+            <body style='font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4;'>
+                <div style='max-width: 600px; margin: 20px auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>
+                    <div style='background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%); padding: 30px; text-align: center;'>
+                        <h1 style='color: white; margin: 0; font-size: 28px;'>E-commerce Platform</h1>
+                    </div>
+                    <div style='padding: 40px 30px;'>
+                        <h2 style='color: #333; margin-top: 0;'>Hello %s,</h2>
+                        <h3 style='color: #555; font-weight: normal;'>%s</h3>
+                        <p style='color: #666; line-height: 1.6; font-size: 16px;'>%s</p>
+                        <div style='background: #f8f8f8; padding: 20px; border-radius: 6px; margin: 20px 0;'>
+                            <h4 style='margin-top: 0; color: #333;'>%s</h4>
+                            <div style='color: #666; line-height: 1.6; margin: 0;'>%s</div>
+                        </div>
+                        <p style='color: #666; line-height: 1.6; font-size: 14px; margin-top: 20px;'>%s</p>
+                    </div>
+                    <div style='background: #f8f8f8; padding: 20px; text-align: center; border-top: 1px solid #eee;'>
+                        <p style='color: #999; font-size: 12px; margin: 0;'>© 2026 E-commerce Platform.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """.formatted(username, title, subtitle, detailsTitle, detailsHtml, footer);
     }
 }

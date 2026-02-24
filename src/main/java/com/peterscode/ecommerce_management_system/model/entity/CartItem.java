@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString(exclude = {"cart", "product"})
 @Table(name = "cart_items", indexes = {
         @Index(name = "idx_cart_id", columnList = "cart_id"),
         @Index(name = "idx_product_id", columnList = "product_id")
@@ -43,6 +45,31 @@ public class CartItem {
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
 
+    // Kilimall-style features
+    @Column(name = "selected", nullable = false)
+    @Builder.Default
+    private Boolean selected = true; // Selected for checkout
+
+    @Column(name = "saved_for_later", nullable = false)
+    @Builder.Default
+    private Boolean savedForLater = false; // Save for later feature
+
+    @Column(name = "price_at_addition", precision = 10, scale = 2)
+    private BigDecimal priceAtAddition; // Price when item was added (for price change detection)
+
+    @Column(name = "notes", length = 500)
+    private String notes; // Color/size/variant specifications
+
+    @Column(name = "max_buy_quantity")
+    private Integer maxBuyQuantity; // Per-product purchase limit
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_variant_id")
+    private ProductVariant productVariant;
+
+    @Version
+    private Long version;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -55,23 +82,6 @@ public class CartItem {
     public void calculateTotalPrice() {
         if (unitPrice != null && quantity != null) {
             this.totalPrice = unitPrice.multiply(BigDecimal.valueOf(quantity));
-        }
-    }
-
-    public void updateQuantity(int quantity) {
-        this.quantity = quantity;
-        calculateTotalPrice();
-    }
-
-    public void incrementQuantity() {
-        this.quantity++;
-        calculateTotalPrice();
-    }
-
-    public void decrementQuantity() {
-        if (this.quantity > 1) {
-            this.quantity--;
-            calculateTotalPrice();
         }
     }
 }

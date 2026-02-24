@@ -66,4 +66,7 @@ public interface AuthService {
      */
     @Transactional
     void resetPassword(String token, String newPassword, HttpServletRequest httpRequest);
+
+    @Transactional
+    UserResponse registerFirstAdmin(RegisterRequest request, HttpServletRequest httpRequest);
 }

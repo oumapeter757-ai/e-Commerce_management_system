@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString(exclude = {"order", "product"})
 @Table(name = "order_items", indexes = {
         @Index(name = "idx_order_id", columnList = "order_id"),
         @Index(name = "idx_product_id", columnList = "product_id")
@@ -58,6 +60,10 @@ public class OrderItem {
     @Column(name = "product_image_url", length = 500)
     private String productImageUrl; // Snapshot for order history
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_variant_id")
+    private ProductVariant productVariant;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -73,11 +79,5 @@ public class OrderItem {
         if (taxAmount != null && taxAmount.compareTo(BigDecimal.ZERO) > 0) {
             this.totalPrice = this.totalPrice.add(taxAmount);
         }
-    }
-
-    public BigDecimal getActualUnitPrice() {
-        return (discountPrice != null && discountPrice.compareTo(BigDecimal.ZERO) > 0)
-                ? discountPrice
-                : unitPrice;
     }
 }

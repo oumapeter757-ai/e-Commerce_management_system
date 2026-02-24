@@ -66,6 +66,22 @@ public class AuthController {
                 ));
     }
 
+    @PostMapping("/admin/init")
+    public ResponseEntity<ApiResponse<UserResponse>> registerFirstAdmin(
+            @Valid @RequestBody RegisterRequest request,
+            HttpServletRequest httpRequest) {
+
+        log.info("Admin initialization request received for email: {}", request.getEmail());
+        UserResponse user = authService.registerFirstAdmin(request, httpRequest);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(
+                        "System Initialized! Admin registered and activated.",
+                        user
+                ));
+    }
+
     /**
      * Login user (SHARED - All users use same login endpoint)
      * POST /api/v1/auth/login

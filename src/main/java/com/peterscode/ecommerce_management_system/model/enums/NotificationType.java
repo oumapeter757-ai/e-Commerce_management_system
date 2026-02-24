@@ -13,6 +13,8 @@ public enum NotificationType {
     PAYMENT_RECEIVED,
     PAYMENT_FAILED,
     REFUND_PROCESSED,
+    PAYMENT_INITIATED,
+    PAYMENT_SUCCESSFUL,
 
     // Product notifications
     PRODUCT_BACK_IN_STOCK,
@@ -41,5 +43,6 @@ public enum NotificationType {
 
     // General
     GENERAL_INFO,
-    PAYMENT_REFUNDED, REMINDER
+    PAYMENT_REFUNDED, REMINDER,
+    LOW_STOCK
 }

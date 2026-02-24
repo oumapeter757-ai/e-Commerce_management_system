@@ -23,7 +23,7 @@ public class ShippingController {
     }
 
     @GetMapping("/order/{orderId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public ResponseEntity<ShippingResponse> getByOrder(@PathVariable Long orderId) {
         return ResponseEntity.ok(shippingService.getShippingByOrder(orderId));
     }

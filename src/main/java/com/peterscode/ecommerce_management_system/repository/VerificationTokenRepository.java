@@ -1,6 +1,6 @@
 package com.peterscode.ecommerce_management_system.repository;
 
-import com.peterscode.ecommerce_management_system.model.entity.TokenType;
+import com.peterscode.ecommerce_management_system.model.enums.TokenType;
 import com.peterscode.ecommerce_management_system.model.entity.User;
 import com.peterscode.ecommerce_management_system.model.entity.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;

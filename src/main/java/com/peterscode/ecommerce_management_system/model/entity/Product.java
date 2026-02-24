@@ -102,6 +102,9 @@ public class Product {
     @Builder.Default
     private Boolean isFeatured = false;
 
+    @Column(name = "max_buy_quantity")
+    private Integer maxBuyQuantity; // Maximum quantity a customer can purchase per order
+
     @Column(name = "view_count")
     @Builder.Default
     private Long viewCount = 0L;
@@ -149,25 +152,5 @@ public class Product {
         return price.subtract(discountPrice)
                 .multiply(BigDecimal.valueOf(100))
                 .divide(price, 2, java.math.RoundingMode.HALF_UP);
-    }
-
-    public void incrementViewCount() {
-        this.viewCount = (this.viewCount == null ? 0L : this.viewCount) + 1;
-    }
-
-    public void incrementSoldCount(int quantity) {
-        this.soldCount = (this.soldCount == null ? 0L : this.soldCount) + quantity;
-    }
-
-    public void reduceStock(int quantity) {
-        if (this.stockQuantity != null && this.stockQuantity >= quantity) {
-            this.stockQuantity -= quantity;
-        } else {
-            throw new IllegalStateException("Insufficient stock available");
-        }
-    }
-
-    public void addStock(int quantity) {
-        this.stockQuantity = (this.stockQuantity == null ? 0 : this.stockQuantity) + quantity;
     }
 }

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString(exclude = {"order", "shippingAddress"})
 @Table(name = "shipping", indexes = {
         @Index(name = "idx_order_id", columnList = "order_id"),
         @Index(name = "idx_tracking_number", columnList = "tracking_number"),
@@ -107,10 +109,6 @@ public class Shipping {
         this.shippedAt = LocalDateTime.now();
     }
 
-    public void markAsInTransit() {
-        this.status = ShippingStatus.IN_TRANSIT;
-    }
-
     public void markAsOutForDelivery() {
         this.status = ShippingStatus.OUT_FOR_DELIVERY;
     }
@@ -124,22 +122,5 @@ public class Shipping {
     public void markAsException(String reason) {
         this.status = ShippingStatus.EXCEPTION;
         this.exceptionReason = reason;
-    }
-
-    public void markAsReturned() {
-        this.status = ShippingStatus.RETURNED;
-    }
-
-    public boolean isDelivered() {
-        return status == ShippingStatus.DELIVERED;
-    }
-
-    public boolean isInTransit() {
-        return status == ShippingStatus.IN_TRANSIT ||
-                status == ShippingStatus.OUT_FOR_DELIVERY;
-    }
-
-    public boolean hasException() {
-        return status == ShippingStatus.EXCEPTION;
     }
 }

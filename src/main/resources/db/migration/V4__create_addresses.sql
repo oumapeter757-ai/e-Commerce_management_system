@@ -30,7 +30,6 @@ CREATE TABLE addresses (
 CREATE INDEX idx_user_id ON addresses (user_id);
 CREATE INDEX idx_is_default ON addresses (is_default);
 
--- 1. Create Orders Table
 CREATE TABLE orders (
                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
                         order_number VARCHAR(50) NOT NULL UNIQUE,
@@ -52,6 +51,7 @@ CREATE TABLE orders (
                         delivered_at DATETIME(6),
                         cancelled_at DATETIME(6),
                         cancellation_reason TEXT,
+                        paid_at DATETIME(6),  -- ADD THIS COLUMN
                         created_at DATETIME(6) NOT NULL,
                         updated_at DATETIME(6),
 
@@ -65,11 +65,6 @@ CREATE TABLE orders (
                             FOREIGN KEY (billing_address_id)
                                 REFERENCES addresses (id)
 );
-
-CREATE INDEX idx_order_user_id ON orders (user_id);
-CREATE INDEX idx_order_number ON orders (order_number);
-CREATE INDEX idx_order_status ON orders (status);
-CREATE INDEX idx_order_created_at ON orders (created_at);
 
 -- 2. Create Order Items Table
 CREATE TABLE order_items (

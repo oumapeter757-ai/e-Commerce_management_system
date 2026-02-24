@@ -32,4 +32,7 @@ public class PaymentRequest {
 
     @Size(max = 500, message = "Notes must not exceed 500 characters")
     private String notes;
+
+    @Size(max = 64, message = "Idempotency key must not exceed 64 characters")
+    private String idempotencyKey;
 }

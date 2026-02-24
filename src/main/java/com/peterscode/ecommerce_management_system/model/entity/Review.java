@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString(exclude = {"product", "user", "order"})
 @Table(name = "reviews", indexes = {
         @Index(name = "idx_product_id", columnList = "product_id"),
         @Index(name = "idx_user_id", columnList = "user_id"),
@@ -105,13 +107,5 @@ public class Review {
         if (this.notHelpfulCount != null && this.notHelpfulCount > 0) {
             this.notHelpfulCount--;
         }
-    }
-
-    public boolean isHighRating() {
-        return rating != null && rating >= 4;
-    }
-
-    public boolean isLowRating() {
-        return rating != null && rating <= 2;
     }
 }

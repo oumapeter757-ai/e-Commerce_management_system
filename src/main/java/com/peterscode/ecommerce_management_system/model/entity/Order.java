@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -19,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString(exclude = {"user", "orderItems", "shippingAddress", "billingAddress"})
 @Table(name = "orders", indexes = {
         @Index(name = "idx_user_id", columnList = "user_id"),
         @Index(name = "idx_order_number", columnList = "order_number"),
@@ -99,6 +101,10 @@ public class Order {
     @Column(name = "cancellation_reason", columnDefinition = "TEXT")
     private String cancellationReason;
 
+    // NEW FIELD: Track when payment was completed
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -107,15 +113,11 @@ public class Order {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Business logic methods
+    // ===== BUSINESS LOGIC METHODS =====
+
     public void addOrderItem(OrderItem item) {
         orderItems.add(item);
         item.setOrder(this);
-    }
-
-    public void removeOrderItem(OrderItem item) {
-        orderItems.remove(item);
-        item.setOrder(null);
     }
 
     public void calculateTotals() {
@@ -135,15 +137,14 @@ public class Order {
                 .sum();
     }
 
-    public boolean canBeCancelled() {
-        return status == OrderStatus.PENDING || status == OrderStatus.CONFIRMED;
-    }
-
-    public boolean isDelivered() {
-        return status == OrderStatus.DELIVERED;
-    }
-
-    public boolean isCancelled() {
-        return status == OrderStatus.CANCELLED;
+    // Set paidAt with validation
+    public void setPaidAt(LocalDateTime paidAt) {
+        if (paidAt == null) {
+            throw new IllegalArgumentException("Paid at date cannot be null");
+        }
+        if (paidAt.isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Paid at date cannot be in the future");
+        }
+        this.paidAt = paidAt;
     }
 }

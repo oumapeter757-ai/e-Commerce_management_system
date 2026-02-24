@@ -1,6 +1,6 @@
 package com.peterscode.ecommerce_management_system.model.dto.common;
 
-import com.peterscode.ecommerce_management_system.model.entity.Address;
+import com.peterscode.ecommerce_management_system.model.enums.AddressType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,7 +24,7 @@ public class AddressDTO {
     private String state;
     private String postalCode;
     private String country;
-    private Address.AddressType addressType;
+    private AddressType addressType;
     private Boolean isDefault;
     private String landmark;
     private BigDecimal latitude;

@@ -1,9 +1,10 @@
 package com.peterscode.ecommerce_management_system.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import com.peterscode.ecommerce_management_system.model.dto.request.MPesaCallbackRequest;
 import com.peterscode.ecommerce_management_system.model.dto.request.PaymentRequest;
 import com.peterscode.ecommerce_management_system.model.dto.response.ApiResponse;
+import com.peterscode.ecommerce_management_system.model.dto.response.MPesaQueryResponse;
 import com.peterscode.ecommerce_management_system.model.dto.response.PaymentResponse;
 import com.peterscode.ecommerce_management_system.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,84 +24,69 @@ import org.springframework.web.bind.annotation.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import org.springframework.security.core.Authentication;
 
-/**
- * Payment Controller
- * Handles M-PESA STK Push and callbacks with enhanced security
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/payments")
 @RequiredArgsConstructor
-@Tag(name = "Payment Management", description = "APIs for payment processing")
+@Tag(name = "Payment Management", description = "APIs for M-PESA payment processing")
 public class PaymentController {
 
     private final PaymentService paymentService;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
-    /**
-     * Initiate M-PESA payment
-     * SECURITY: Requires authentication, validates user owns order
-     */
+    // ==================== PAYMENT INITIATION ====================
+
     @PostMapping("/initiate")
     @PreAuthorize("hasRole('CUSTOMER')")
-    @Operation(summary = "Initiate M-PESA payment for order")
+    @Operation(summary = "Initiate M-PESA STK Push payment")
     public ResponseEntity<ApiResponse<PaymentResponse>> initiatePayment(
             @Valid @RequestBody PaymentRequest request,
-            Principal principal) {
+            Authentication authentication) {
 
-        log.info("Payment initiation request for order: {}", request.getOrderId());
+        Long userId = getUserId(authentication);
+        log.info("Payment initiation request - Order: {}, User: {}", request.getOrderId(), userId);
 
-        Long userId = getUserIdFromPrincipal(principal);
-        PaymentResponse payment = paymentService.initiatePayment(request, userId);
+        PaymentResponse response = paymentService.initiatePayment(request, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Payment initiated. Please check your phone.", payment));
+                .body(ApiResponse.success("Payment initiated. Check your phone for M-PESA prompt.", response));
     }
 
-    /**
-     * M-PESA Callback Endpoint
-     * SECURITY: IP whitelist, signature verification, idempotency
-     *
-     * This endpoint is called by Safaricom after user enters PIN
-     * IMPORTANT: We need to read the raw request body for HMAC verification
-     */
+    // ==================== M-PESA CALLBACKS ====================
+
     @PostMapping("/mpesa/callback")
-    @Operation(summary = "M-PESA STK Push callback (called by Safaricom)")
-    public ResponseEntity<Map<String, Object>> handleMPesaCallback(
-            @RequestHeader(value = "X-Signature", required = false) String signature,
+    @Operation(summary = "M-PESA STK Push callback (called by Safaricom)", hidden = true)
+    public ResponseEntity<Map<String, Object>> handleMpesaCallback(
+            @RequestHeader(value = "X-Callback-Signature", required = false) String signature,
             HttpServletRequest request) {
 
         log.info("M-PESA callback received from IP: {}", getClientIp(request));
 
         try {
-            // Read the raw request body for HMAC signature verification
+            // Read raw request body for HMAC signature verification
             String rawPayload = readRawRequestBody(request);
-
-            // Parse the JSON into our DTO
-            MPesaCallbackRequest callback = objectMapper.readValue(rawPayload, MPesaCallbackRequest.class);
-
-            String checkoutRequestID = callback.getBody().getStkCallback().getCheckoutRequestID();
             String clientIp = getClientIp(request);
 
-            log.info("Processing callback. CheckoutRequestID: {}", checkoutRequestID);
+            // Parse JSON to DTO
+            MPesaCallbackRequest callback = jsonMapper.readValue(rawPayload, MPesaCallbackRequest.class);
 
-            // Process callback asynchronously to respond quickly to Safaricom
+            // Process asynchronously (Safaricom expects quick response)
             CompletableFuture.runAsync(() -> {
                 try {
-                    // Pass the raw payload for HMAC verification
                     paymentService.handleMPesaCallback(callback, rawPayload, clientIp, signature);
                 } catch (Exception e) {
-                    log.error("Error processing M-PESA callback: {}", checkoutRequestID, e);
+                    log.error("Error processing M-PESA callback", e);
                 }
             });
 
-            // Acknowledge receipt immediately (Safaricom expects quick response)
+            // Acknowledge immediately
             Map<String, Object> response = new HashMap<>();
             response.put("ResultCode", 0);
             response.put("ResultDesc", "Accepted");
@@ -117,13 +104,9 @@ public class PaymentController {
         }
     }
 
-    /**
-     * M-PESA Timeout Endpoint
-     * Called by Safaricom if transaction times out
-     */
     @PostMapping("/mpesa/timeout")
-    @Operation(summary = "M-PESA timeout callback")
-    public ResponseEntity<Map<String, Object>> handleMPesaTimeout(
+    @Operation(summary = "M-PESA timeout callback", hidden = true)
+    public ResponseEntity<Map<String, Object>> handleMpesaTimeout(
             @RequestBody Map<String, Object> timeoutData) {
 
         log.warn("M-PESA timeout received: {}", timeoutData);
@@ -144,68 +127,84 @@ public class PaymentController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Check payment status
-     * Allows frontend to poll for payment status
-     */
-    @GetMapping("/status/{orderId}")
+    // ==================== PAYMENT QUERIES ====================
+
+    @GetMapping("/order/{orderId}")
     @PreAuthorize("hasRole('CUSTOMER')")
-    @Operation(summary = "Check payment status for order")
-    public ResponseEntity<ApiResponse<PaymentResponse>> checkPaymentStatus(
+    @Operation(summary = "Get payment status for order")
+    public ResponseEntity<ApiResponse<PaymentResponse>> getPaymentByOrder(
             @PathVariable Long orderId,
-            Principal principal) {
+            Authentication authentication) {
 
-        Long userId = getUserIdFromPrincipal(principal);
-        PaymentResponse payment = paymentService.getPaymentStatusByOrder(orderId, userId);
+        Long userId = getUserId(authentication);
+        PaymentResponse response = paymentService.getPaymentStatusByOrder(orderId, userId);
 
-        return ResponseEntity.ok(ApiResponse.success("Payment status retrieved", payment));
+        return ResponseEntity.ok(ApiResponse.success("Payment status retrieved", response));
     }
 
-    /**
-     * Get payment details
-     */
     @GetMapping("/{paymentId}")
     @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
-    @Operation(summary = "Get payment details")
-    public ResponseEntity<ApiResponse<PaymentResponse>> getPayment(
-            @PathVariable Long paymentId,
-            Principal principal) {
+    @Operation(summary = "Get payment details by ID")
+    public ResponseEntity<ApiResponse<PaymentResponse>> getPaymentById(
+            @PathVariable Long paymentId) {
 
-        PaymentResponse payment = paymentService.getPaymentById(paymentId);
-        return ResponseEntity.ok(ApiResponse.success("Payment retrieved", payment));
+        PaymentResponse response = paymentService.getPaymentById(paymentId);
+
+        return ResponseEntity.ok(ApiResponse.success("Payment retrieved", response));
     }
 
-    /**
-     * Get all payments for user
-     */
     @GetMapping("/user")
     @PreAuthorize("hasRole('CUSTOMER')")
     @Operation(summary = "Get user's payment history")
     public ResponseEntity<ApiResponse<List<PaymentResponse>>> getUserPayments(
-            Principal principal) {
+            Authentication authentication) {
 
-        Long userId = getUserIdFromPrincipal(principal);
-        List<PaymentResponse> payments = paymentService.getUserPayments(userId);
+        Long userId = getUserId(authentication);
+        List<PaymentResponse> responses = paymentService.getUserPayments(userId);
 
-        return ResponseEntity.ok(ApiResponse.success("Payments retrieved", payments));
+        return ResponseEntity.ok(ApiResponse.success("Payments retrieved", responses));
     }
 
-    /**
-     * Admin: Get all payments
-     */
-    @GetMapping("/admin/all")
+    @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get all payments (Admin only)")
     public ResponseEntity<ApiResponse<Page<PaymentResponse>>> getAllPayments(
-            Pageable pageable) {
+            @PageableDefault(size = 20) Pageable pageable) {
 
-        Page<PaymentResponse> payments = paymentService.getAllPayments(pageable);
-        return ResponseEntity.ok(ApiResponse.success("Payments retrieved", payments));
+        Page<PaymentResponse> responses = paymentService.getAllPayments(pageable);
+
+        return ResponseEntity.ok(ApiResponse.success("Payments retrieved", responses));
     }
 
-    /**
-     * Admin: Process refund
-     */
+    @GetMapping("/mpesa/query/{checkoutRequestId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Query M-PESA transaction status (Admin only)")
+    public ResponseEntity<ApiResponse<MPesaQueryResponse>> queryMpesaTransaction(
+            @PathVariable String checkoutRequestId) {
+
+        MPesaQueryResponse response = paymentService.queryMpesaTransaction(checkoutRequestId);
+
+        return ResponseEntity.ok(ApiResponse.success("Transaction status retrieved", response));
+    }
+
+    @GetMapping("/verify/{orderId}")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    @Operation(summary = "Verify if order is fully paid")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> verifyPayment(
+            @PathVariable Long orderId) {
+
+        boolean isVerified = paymentService.verifyPayment(orderId);
+        BigDecimal totalPaid = paymentService.getTotalPaidAmount(orderId);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("verified", isVerified);
+        result.put("totalPaid", totalPaid);
+
+        return ResponseEntity.ok(ApiResponse.success("Payment verification completed", result));
+    }
+
+    // ==================== PAYMENT MANAGEMENT ====================
+
     @PostMapping("/{paymentId}/refund")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Process payment refund (Admin only)")
@@ -214,15 +213,29 @@ public class PaymentController {
             @RequestParam BigDecimal amount,
             @RequestParam String reason) {
 
-        PaymentResponse payment = paymentService.processRefund(paymentId, amount, reason);
-        return ResponseEntity.ok(ApiResponse.success("Refund processed", payment));
+        PaymentResponse response = paymentService.processRefund(paymentId, amount, reason);
+
+        return ResponseEntity.ok(ApiResponse.success("Refund processed successfully", response));
     }
 
-    // --- Helper Methods ---
+    @PostMapping("/{paymentId}/cancel")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN')")
+    @Operation(summary = "Cancel pending payment")
+    public ResponseEntity<ApiResponse<Void>> cancelPayment(
+            @PathVariable Long paymentId,
+            @RequestParam String reason,
+            Authentication authentication) {
+
+        paymentService.cancelPayment(paymentId, reason);
+
+        return ResponseEntity.ok(ApiResponse.success("Payment cancelled successfully", null));
+    }
+
+    // ==================== UTILITY METHODS ====================
 
     /**
      * Read raw request body for HMAC signature verification
-     * CRITICAL: Must preserve exact request body for signature validation
+     * CRITICAL: Must preserve exact request body
      */
     private String readRawRequestBody(HttpServletRequest request) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -238,17 +251,7 @@ public class PaymentController {
     }
 
     /**
-     * Extract user ID from JWT principal
-     */
-    private Long getUserIdFromPrincipal(Principal principal) {
-        // Implementation depends on your JWT configuration
-        // This is a placeholder - adjust based on your security setup
-        return Long.parseLong(principal.getName());
-    }
-
-    /**
-     * Get client IP address
-     * Handles proxy headers (X-Forwarded-For, X-Real-IP)
+     * Extract client IP from request (handles proxies)
      */
     private String getClientIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
@@ -261,11 +264,22 @@ public class PaymentController {
             ip = request.getRemoteAddr();
         }
 
-        // If multiple IPs (proxy chain), get the first one (original client)
+        // Handle proxy chain - get original client IP
         if (ip != null && ip.contains(",")) {
             ip = ip.split(",")[0].trim();
         }
 
         return ip;
+    }
+
+    private Long getUserId(Authentication authentication) {
+        if (authentication == null) {
+            throw new IllegalArgumentException("User not authenticated");
+        }
+        try {
+            return Long.parseLong(authentication.getName());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid User ID in token");
+        }
     }
 }

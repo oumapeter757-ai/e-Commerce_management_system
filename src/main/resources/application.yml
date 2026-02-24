@@ -2,11 +2,12 @@ spring:
   application:
     name: ecommerce_management_system
 
-  # DATABASE CONFIGURATION - Local MySQL
+  # DATABASE CONFIGURATION
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ecommerce_db}?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true
-    username: ${DB_USER:peter}
-    password: ${DB_PASSWORD:peter}
+    # Now uses variables from .env
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 10
@@ -23,14 +24,18 @@ spring:
     locations: classpath:db/migration
     baseline-version: 0
     validate-on-migrate: true
+    out-of-order: true
+    clean-disabled: false
 
-  # REDIS CONFIGURATION - Local Redis
+  # REDIS CONFIGURATION
   data:
     redis:
       host: localhost
       port: 6379
-      password: ${REDIS_PASSWORD:}
+      password: ${REDIS_PASSWORD}
       timeout: 60000
+      repositories:
+        enabled: false
       lettuce:
         pool:
           max-active: 8
@@ -56,30 +61,33 @@ spring:
     show-sql: true
     open-in-view: false
 
-  # CACHE CONFIGURATION
+  # CACHE CONFIGURATION (TTLs managed in RedisConfig.java)
   cache:
     type: redis
-    redis:
-      time-to-live: 600000
-      cache-null-values: false
-      use-key-prefix: true
-      key-prefix: "ecommerce:"
 
-  # EMAIL CONFIGURATION
+  # EMAIL CONFIGURATION (SECURE)
   mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:oumapeter757@gmail.com}
-    password: ${MAIL_PASSWORD:ppjz paxe qihv dlvk }
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    protocol: smtps
     properties:
       mail:
         smtp:
           auth: true
-          starttls:
+          ssl:
             enable: true
-          connectiontimeout: 30000
-          timeout: 30000
-          writetimeout: 30000
+            trust: "*"
+          starttls:
+            enable: false
+          socketFactory:
+            port: 465
+            class: javax.net.ssl.SSLSocketFactory
+            fallback: false
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
     default-encoding: UTF-8
 
   # SERVLET CONFIGURATION
@@ -112,8 +120,8 @@ logging:
     org.flywaydb: INFO
     org.springframework.data.redis: INFO
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{requestId}] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{requestId}] %-5level %logger{36} - %msg%n"
   file:
     name: logs/ecommerce-app.log
     max-size: 10MB
@@ -123,7 +131,7 @@ logging:
 app:
   # JWT Configuration
   jwt:
-    secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+    secret: ${JWT_SECRET}
     access-token-expiration: 3600000       # 1 hour
     refresh-token-expiration: 604800000    # 7 days
 
@@ -141,9 +149,9 @@ app:
     allow-credentials: true
     max-age: 3600
 
-  # Frontend URL for email links
+  # Frontend URL
   frontend:
-    url: https://halfhearted-shavonda-unedificial.ngrok-free.dev
+    url: ${FRONTEND_URL}
 
 # SPRINGDOC / SWAGGER CONFIGURATION
 springdoc:
@@ -175,28 +183,21 @@ management:
 # ==========================================
 # M-PESA SANDBOX CONFIGURATION
 # ==========================================
-# ==========================================
-# M-PESA SANDBOX CONFIGURATION
-# ==========================================
 mpesa:
-  # CHANGED: 'api-url' -> 'api.url' to match Java @Value("${mpesa.api.url}")
   api:
     url: https://sandbox.safaricom.co.ke
 
-  # CHANGED: nesting under 'consumer' to match @Value("${mpesa.consumer.key}")
   consumer:
-    key: ${MPESA_CONSUMER_KEY:RrATTQUoEisDjjOOJ3GHRjMxxjz5poanqzQqBJV71l0RnWJs}
-    secret: ${MPESA_CONSUMER_SECRET:zvFycfjcNJhqFXLWShhfZXUvq5cjAPAvlJ3kwpGckeZ7PMRKlIni8GuBk7KeRDAk}
+    key: ${MPESA_CONSUMER_KEY}
+    secret: ${MPESA_CONSUMER_SECRET}
 
-  shortcode: ${MPESA_SHORTCODE:174379}
-  passkey: ${MPESA_PASSKEY:bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919}
+  shortcode: ${MPESA_SHORTCODE}
+  passkey: ${MPESA_PASSKEY}
 
-  # CHANGED: nesting under 'callback' to match @Value("${mpesa.callback.url}")
   callback:
-    url: https://halfhearted-shavonda-unedificial.ngrok-free.dev
-    secret: ${MPESA_CALLBACK_SECRET:MySuperSecretRandomString}
+    url: ${FRONTEND_URL}
+    secret: ${MPESA_CALLBACK_SECRET}
 
-  # CHANGED: nesting under 'oauth' and 'stk-push' to match Java structure
   oauth:
     endpoint: /oauth/v1/generate?grant_type=client_credentials
 

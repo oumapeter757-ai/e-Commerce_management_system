@@ -19,7 +19,18 @@ public interface InventoryService {
 
     void confirmStockReduction(Long productId, Integer quantity);
 
-    Integer getStock(Long productId);
+    Integer getAvailableStock(Long productId);
 
     PageResponse<InventoryResponse> getLowStockInventory(Pageable pageable);
+
+    boolean isStockAvailable(Long productId, Integer quantity);
+
+    Integer getTotalStock(Long productId);
+
+    // New methods
+    boolean isLowStock(Long productId);
+
+    Integer getReservedStock(Long productId);
+
+    Integer getStock(Long id);
 }

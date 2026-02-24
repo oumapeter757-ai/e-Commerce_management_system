@@ -12,10 +12,14 @@ public class InventoryMapper {
             return null;
         }
 
+        // Calculate total quantity
+        Integer totalQuantity = inventory.getAvailableStock() + inventory.getReservedStock();
+
+        // Determine status
         String status = "IN_STOCK";
         if (inventory.getAvailableStock() == 0) {
             status = "OUT_OF_STOCK";
-        } else if (inventory.isLowStock()) {
+        } else if (inventory.getAvailableStock() <= inventory.getLowStockThreshold()) {
             status = "LOW_STOCK";
         }
 
@@ -24,12 +28,12 @@ public class InventoryMapper {
                 .productId(inventory.getProduct().getId())
                 .productName(inventory.getProduct().getName())
                 .productSku(inventory.getProduct().getSku())
-                .totalQuantity(inventory.getQuantity())
-                .reservedQuantity(inventory.getReservedQuantity())
+                .totalQuantity(totalQuantity)
+                .reservedQuantity(inventory.getReservedStock())
                 .availableStock(inventory.getAvailableStock())
                 .lowStockThreshold(inventory.getLowStockThreshold())
                 .status(status)
-                .lastUpdated(inventory.getLastUpdated())
+                .lastUpdated(inventory.getUpdatedAt())
                 .build();
     }
 }

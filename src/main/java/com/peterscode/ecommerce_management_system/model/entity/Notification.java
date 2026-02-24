@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString(exclude = {"user"})
 @Table(name = "notifications", indexes = {
         @Index(name = "idx_user_id", columnList = "user_id"),
         @Index(name = "idx_is_read", columnList = "is_read"),
@@ -96,32 +98,5 @@ public class Notification {
     public void markAsRead() {
         this.isRead = true;
         this.readAt = LocalDateTime.now();
-    }
-
-    public void markAsSent() {
-        this.isSent = true;
-        this.sentAt = LocalDateTime.now();
-    }
-
-    public void markEmailAsSent() {
-        this.isEmailSent = true;
-        this.emailSentAt = LocalDateTime.now();
-    }
-
-    public void markSmsAsSent() {
-        this.isSmsSent = true;
-        this.smsSentAt = LocalDateTime.now();
-    }
-
-    public boolean isExpired() {
-        return expiresAt != null && LocalDateTime.now().isAfter(expiresAt);
-    }
-
-    public boolean isHighPriority() {
-        return priority != null && priority >= 3;
-    }
-
-    public boolean isUrgent() {
-        return priority != null && priority == 4;
     }
 }

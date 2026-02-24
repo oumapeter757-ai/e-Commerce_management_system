@@ -5,10 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.Instant;
+import com.peterscode.ecommerce_management_system.model.enums.TokenType;
 import java.time.LocalDateTime;
 
 @Data
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString(exclude = {"user"})
 @Table(name = "verification_tokens", indexes = {
         @Index(name = "idx_token", columnList = "token"),
         @Index(name = "idx_user_id", columnList = "user_id"),
@@ -53,10 +55,5 @@ public class VerificationToken {
 
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiresAt);
-    }
-
-    // Helper to check confirmation
-    public boolean isConfirmed() {
-        return confirmedAt != null;
     }
 }

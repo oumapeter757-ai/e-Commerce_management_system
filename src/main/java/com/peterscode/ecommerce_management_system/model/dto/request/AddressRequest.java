@@ -1,6 +1,6 @@
 package com.peterscode.ecommerce_management_system.model.dto.request;
 
-import com.peterscode.ecommerce_management_system.model.entity.Address;
+import com.peterscode.ecommerce_management_system.model.enums.AddressType;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,7 +46,7 @@ public class AddressRequest {
     private String country;
 
     @NotNull(message = "Address type is required")
-    private Address.AddressType addressType;
+    private AddressType addressType;
 
     private Boolean isDefault;
 

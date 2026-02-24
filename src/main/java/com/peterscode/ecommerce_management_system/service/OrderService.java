@@ -1,5 +1,6 @@
 package com.peterscode.ecommerce_management_system.service;
 
+import com.peterscode.ecommerce_management_system.model.dto.request.CheckoutRequest;
 import com.peterscode.ecommerce_management_system.model.dto.request.OrderRequest;
 import com.peterscode.ecommerce_management_system.model.dto.response.OrderResponse;
 import com.peterscode.ecommerce_management_system.model.enums.OrderStatus;
@@ -12,6 +13,11 @@ import java.util.List;
 public interface OrderService {
 
     OrderResponse createOrder(OrderRequest request, Long userId);
+
+    /**
+     * Kilimall-style checkout: creates order from selected cart items.
+     */
+    OrderResponse checkoutFromCart(CheckoutRequest request, Long userId);
 
     // UPDATED: Now accepts requestingUserId for security check
     OrderResponse getOrderById(Long orderId, Long requestingUserId);

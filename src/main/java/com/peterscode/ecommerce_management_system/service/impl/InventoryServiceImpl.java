@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,74 +42,130 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     @Transactional
     public void restock(Long productId, Integer quantity) {
+        validateQuantity(quantity);
+
         Inventory inventory = inventoryRepository.findByProductId(productId)
                 .orElseGet(() -> createNewInventory(productId));
 
-        inventory.setQuantity(inventory.getQuantity() + quantity);
+        inventory.setAvailableStock(inventory.getAvailableStock() + quantity);
+        inventory.setLastRestocked(LocalDateTime.now());
         inventoryRepository.save(inventory);
-        log.info("Restocked product {}. New Total Quantity: {}", productId, inventory.getQuantity());
+
+        log.info("Restocked product {}. Added: {}, New Available Stock: {}",
+                productId, quantity, inventory.getAvailableStock());
     }
 
     @Override
     @Transactional
     public InventoryResponse updateStock(Long productId, InventoryUpdateRequest request) {
         Inventory inventory = inventoryRepository.findByProductId(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found for product: " + productId));
 
-        inventory.setQuantity(request.getQuantity()); // Sets absolute quantity
-        return inventoryMapper.toResponse(inventoryRepository.save(inventory));
+        // Apply updates with validation
+        if (request.getAvailableStock() != null) {
+            validateStockValue(request.getAvailableStock());
+            inventory.setAvailableStock(request.getAvailableStock());
+        }
+        if (request.getReservedStock() != null) {
+            validateStockValue(request.getReservedStock());
+            validateReservedDoesNotExceedAvailable(inventory, request.getReservedStock());
+            inventory.setReservedStock(request.getReservedStock());
+        }
+        if (request.getLowStockThreshold() != null) {
+            validateStockValue(request.getLowStockThreshold());
+            inventory.setLowStockThreshold(request.getLowStockThreshold());
+        }
+        if (request.getRestockQuantity() != null) {
+            validateStockValue(request.getRestockQuantity());
+            inventory.setRestockQuantity(request.getRestockQuantity());
+        }
+
+        Inventory savedInventory = inventoryRepository.save(inventory);
+        log.info("Updated inventory for product {}. Available: {}, Reserved: {}",
+                productId, savedInventory.getAvailableStock(), savedInventory.getReservedStock());
+
+        return inventoryMapper.toResponse(savedInventory);
     }
 
     @Override
     @Transactional
     public void reserveStock(Long productId, Integer quantity) {
-        Inventory inventory = inventoryRepository.findByProductId(productId)
+        validateQuantity(quantity);
+
+        Inventory inventory = inventoryRepository.findByProductIdWithLock(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Inventory not found for product: " + productId));
 
+        // Business logic: Check if enough stock is available
         if (inventory.getAvailableStock() < quantity) {
-            throw new InsufficientStockException("Not enough stock for product " + productId + ". Requested: " + quantity + ", Available: " + inventory.getAvailableStock());
+            throw new InsufficientStockException(
+                    String.format("Insufficient stock for product %s. Available: %d, Requested: %d",
+                            inventory.getProduct().getName(), inventory.getAvailableStock(), quantity));
         }
 
-        inventory.setReservedQuantity(inventory.getReservedQuantity() + quantity);
+        // Reserve the quantity (move from available to reserved)
+        inventory.setAvailableStock(inventory.getAvailableStock() - quantity);
+        inventory.setReservedStock(inventory.getReservedStock() + quantity);
+
         inventoryRepository.save(inventory);
-        log.debug("Reserved {} items for product {}", quantity, productId);
+
+        log.info("Reserved {} items for product {}. Available: {}, Reserved: {}",
+                quantity, productId, inventory.getAvailableStock(), inventory.getReservedStock());
     }
 
     @Override
     @Transactional
     public void releaseReservedStock(Long productId, Integer quantity) {
-        Inventory inventory = inventoryRepository.findByProductId(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found"));
+        validateQuantity(quantity);
 
-        int newReserved = inventory.getReservedQuantity() - quantity;
-        if (newReserved < 0) newReserved = 0; // Safety net
+        Inventory inventory = inventoryRepository.findByProductIdWithLock(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found for product: " + productId));
 
-        inventory.setReservedQuantity(newReserved);
+        // Business logic: Check if enough reserved stock exists
+        if (inventory.getReservedStock() < quantity) {
+            log.warn("Attempted to release more reserved stock than exists for product {}. Reserved: {}, Requested: {}",
+                    productId, inventory.getReservedStock(), quantity);
+            // Release whatever is available
+            quantity = inventory.getReservedStock();
+        }
+
+        // Release reserved stock (move from reserved back to available)
+        inventory.setReservedStock(inventory.getReservedStock() - quantity);
+        inventory.setAvailableStock(inventory.getAvailableStock() + quantity);
+
         inventoryRepository.save(inventory);
-        log.debug("Released {} reserved items for product {}", quantity, productId);
+
+        log.info("Released {} reserved items for product {}. Available: {}, Reserved: {}",
+                quantity, productId, inventory.getAvailableStock(), inventory.getReservedStock());
     }
 
     @Override
     @Transactional
     public void confirmStockReduction(Long productId, Integer quantity) {
-        Inventory inventory = inventoryRepository.findByProductId(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found"));
+        validateQuantity(quantity);
 
-        // When a sale is confirmed, we reduce the total quantity AND the reserved quantity
-        inventory.setQuantity(inventory.getQuantity() - quantity);
-        inventory.setReservedQuantity(inventory.getReservedQuantity() - quantity);
+        Inventory inventory = inventoryRepository.findByProductIdWithLock(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found for product: " + productId));
 
-        // Safety check to ensure we don't go negative
-        if (inventory.getQuantity() < 0) inventory.setQuantity(0);
-        if (inventory.getReservedQuantity() < 0) inventory.setReservedQuantity(0);
+        // Business logic: Check if enough reserved stock exists
+        if (inventory.getReservedStock() < quantity) {
+            throw new IllegalArgumentException(
+                    String.format("Cannot confirm more than reserved. Product: %s, Reserved: %d, Requested: %d",
+                            inventory.getProduct().getName(), inventory.getReservedStock(), quantity));
+        }
+
+        // Confirm sale (remove from reserved, total stock is reduced)
+        inventory.setReservedStock(inventory.getReservedStock() - quantity);
+        // Available stock was already reduced during reservation
 
         inventoryRepository.save(inventory);
-        log.info("Stock reduced by {} for product {}", quantity, productId);
+
+        log.info("Confirmed sale of {} items for product {}. Reserved stock now: {}",
+                quantity, productId, inventory.getReservedStock());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Integer getStock(Long productId) {
+    public Integer getAvailableStock(Long productId) {
         return inventoryRepository.findByProductId(productId)
                 .map(Inventory::getAvailableStock)
                 .orElse(0);
@@ -122,18 +179,88 @@ public class InventoryServiceImpl implements InventoryService {
                 .map(inventoryMapper::toResponse)
                 .collect(Collectors.toList());
 
-        return PageResponse.of(content, page.getNumber(), page.getSize(), page.getTotalElements(), page.getTotalPages());
+        return PageResponse.of(content, page.getNumber(), page.getSize(),
+                page.getTotalElements(), page.getTotalPages());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isStockAvailable(Long productId, Integer quantity) {
+        validateQuantity(quantity);
+
+        return inventoryRepository.findByProductId(productId)
+                .map(inventory -> inventory.getAvailableStock() >= quantity)
+                .orElse(false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer getTotalStock(Long productId) {
+        return inventoryRepository.findByProductId(productId)
+                .map(inventory -> inventory.getAvailableStock() + inventory.getReservedStock())
+                .orElse(0);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isLowStock(Long productId) {
+        return inventoryRepository.findByProductId(productId)
+                .map(inventory -> inventory.getAvailableStock() <= inventory.getLowStockThreshold())
+                .orElse(false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer getReservedStock(Long productId) {
+        return inventoryRepository.findByProductId(productId)
+                .map(Inventory::getReservedStock)
+                .orElse(0);
+    }
+
+    @Override
+    public Integer getStock(Long productId) {
+        return inventoryRepository.findByProductId(productId)
+                .map(inventory -> inventory.getAvailableStock() + inventory.getReservedStock())
+                .orElse(0);
+    }
+
+
+    // ========== HELPER METHODS ==========
+
+    private void validateQuantity(Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be a positive number");
+        }
+    }
+
+    private void validateStockValue(Integer stock) {
+        if (stock != null && stock < 0) {
+            throw new IllegalArgumentException("Stock value cannot be negative");
+        }
+    }
+
+    private void validateReservedDoesNotExceedAvailable(Inventory inventory, Integer reservedStock) {
+        if (reservedStock > inventory.getAvailableStock() + inventory.getReservedStock()) {
+            throw new IllegalArgumentException(
+                    String.format("Reserved stock cannot exceed total stock. Available: %d, Reserved: %d, Requested: %d",
+                            inventory.getAvailableStock(), inventory.getReservedStock(), reservedStock));
+        }
     }
 
     private Inventory createNewInventory(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
 
-        return Inventory.builder()
+        Inventory inventory = Inventory.builder()
                 .product(product)
-                .quantity(0)
-                .reservedQuantity(0)
+                .sku(product.getSku() + "-INV")
+                .availableStock(0)
+                .reservedStock(0)
                 .lowStockThreshold(10)
+                .restockQuantity(100)
                 .build();
+
+        log.info("Created new inventory for product: {}", product.getName());
+        return inventoryRepository.save(inventory);
     }
 }

@@ -1,10 +1,12 @@
 package com.peterscode.ecommerce_management_system.model.entity;
 
+import com.peterscode.ecommerce_management_system.model.enums.AddressType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString(exclude = {"user"})
 @Table(name = "addresses", indexes = {
         @Index(name = "idx_user_id", columnList = "user_id"),
         @Index(name = "idx_is_default", columnList = "is_default")
@@ -79,11 +82,6 @@ public class Address {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public enum AddressType {
-        HOME,
-        WORK,
-        OTHER
-    }
 
     // Helper method to get full address
     public String getFullAddress() {

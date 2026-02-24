@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString(exclude = {"user", "items"})
 @Table(name = "carts", indexes = {
         @Index(name = "idx_user_id", columnList = "user_id"),
         @Index(name = "idx_session_id", columnList = "session_id")
@@ -62,6 +64,24 @@ public class Cart {
     @Column(name = "coupon_code", length = 50)
     private String couponCode;
 
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt; // Guest cart expiry
+
+    @Column(name = "estimated_shipping_cost", precision = 10, scale = 2)
+    @Builder.Default
+    private BigDecimal estimatedShippingCost = BigDecimal.ZERO;
+
+    @Column(name = "selected_items_total", precision = 10, scale = 2)
+    @Builder.Default
+    private BigDecimal selectedItemsTotal = BigDecimal.ZERO;
+
+    @Column(name = "total_savings", precision = 10, scale = 2)
+    @Builder.Default
+    private BigDecimal totalSavings = BigDecimal.ZERO;
+
+    @Version
+    private Long version;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -89,26 +109,44 @@ public class Cart {
     }
 
     public void recalculateTotals() {
-        this.totalItems = items.stream()
+        // Only count items that are NOT saved for later
+        List<CartItem> activeItems = items.stream()
+                .filter(item -> !Boolean.TRUE.equals(item.getSavedForLater()))
+                .toList();
+
+        this.totalItems = activeItems.stream()
                 .mapToInt(CartItem::getQuantity)
                 .sum();
 
-        this.subtotal = items.stream()
+        this.subtotal = activeItems.stream()
                 .map(CartItem::getTotalPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Calculate total (subtotal - discount + tax)
-        this.totalAmount = subtotal
+        // Selected items total (Kilimall checkout calculation)
+        this.selectedItemsTotal = activeItems.stream()
+                .filter(item -> Boolean.TRUE.equals(item.getSelected()))
+                .map(CartItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Calculate savings (original price vs discount price)
+        this.totalSavings = activeItems.stream()
+                .filter(item -> item.getPriceAtAddition() != null && item.getUnitPrice() != null)
+                .map(item -> {
+                    BigDecimal originalTotal = item.getPriceAtAddition().multiply(BigDecimal.valueOf(item.getQuantity()));
+                    BigDecimal currentTotal = item.getTotalPrice();
+                    BigDecimal saving = originalTotal.subtract(currentTotal);
+                    return saving.compareTo(BigDecimal.ZERO) > 0 ? saving : BigDecimal.ZERO;
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Calculate total (subtotal - discount + tax + shipping)
+        this.totalAmount = selectedItemsTotal
                 .subtract(discountAmount != null ? discountAmount : BigDecimal.ZERO)
-                .add(taxAmount != null ? taxAmount : BigDecimal.ZERO);
+                .add(taxAmount != null ? taxAmount : BigDecimal.ZERO)
+                .add(estimatedShippingCost != null ? estimatedShippingCost : BigDecimal.ZERO);
     }
 
     public boolean isEmpty() {
         return items == null || items.isEmpty();
-    }
-
-    public boolean hasItem(Long productId) {
-        return items.stream()
-                .anyMatch(item -> item.getProduct().getId().equals(productId));
     }
 }

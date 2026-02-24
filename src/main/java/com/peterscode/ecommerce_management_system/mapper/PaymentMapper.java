@@ -33,7 +33,7 @@ public class PaymentMapper {
         }
 
         // 3. Determine Status Flags (Helper booleans for frontend)
-        boolean isPaid = payment.getStatus() == PaymentStatus.SUCCESSFUL || payment.getStatus() == PaymentStatus.COMPLETED;
+        boolean isPaid = payment.getStatus() == PaymentStatus.SUCCESSFUL;
         boolean isFailed = payment.getStatus() == PaymentStatus.FAILED;
         boolean isPending = payment.getStatus() == PaymentStatus.PENDING || payment.getStatus() == PaymentStatus.PROCESSING;
 

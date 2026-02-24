@@ -1,21 +1,27 @@
 package com.peterscode.ecommerce_management_system.model.entity;
 
-import com.peterscode.ecommerce_management_system.exception.BadRequestException;
+import com.peterscode.ecommerce_management_system.exception.InsufficientStockException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "inventory")
+@Entity
+@ToString(exclude = {"product"})
+@Table(name = "inventory", indexes = {
+        @Index(name = "idx_product_id", columnList = "product_id"),
+        @Index(name = "idx_sku", columnList = "sku")
+})
 public class Inventory {
 
     @Id
@@ -27,108 +33,122 @@ public class Inventory {
     private Product product;
 
     @Column(nullable = false)
-    private Integer quantity;
+    private String sku;
 
-    @Column(name = "reserved_quantity", nullable = false)
+    @Column(name = "available_stock", nullable = false)
+    private Integer availableStock;
+
+    @Column(name = "reserved_stock", nullable = false)
     @Builder.Default
-    private Integer reservedQuantity = 0;
+    private Integer reservedStock = 0;
 
-    @Column(name = "low_stock_threshold", nullable = false)
+    @Column(name = "low_stock_threshold")
     @Builder.Default
     private Integer lowStockThreshold = 10;
 
-    @Version // Optimistic Locking
+    @Column(name = "restock_quantity")
+    private Integer restockQuantity;
+
+    @Column(name = "last_restocked")
+    private LocalDateTime lastRestocked;
+
+    @Version
     private Long version;
 
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
     @UpdateTimestamp
-    @Column(name = "last_updated")
-    private LocalDateTime lastUpdated;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
-    // Helper method to calculate actually sellable stock
-    public int getAvailableStock() {
-        return this.quantity - this.reservedQuantity;
-    }
 
+    /**
+     * Check if stock is low
+     */
     public boolean isLowStock() {
-        return getAvailableStock() <= lowStockThreshold;
+        return availableStock <= lowStockThreshold;
     }
 
-    /**
-     * Deduct inventory quantity after successful payment
-     * This reduces both total quantity and reserved quantity
-     *
-     * @param quantityToDeduct Amount to deduct from inventory
-     * @throws BadRequestException if insufficient stock
-     */
-    public void deductQuantity(Integer quantityToDeduct) {
-        if (quantityToDeduct == null || quantityToDeduct <= 0) {
-            throw new BadRequestException("Deduction quantity must be positive");
+    public void confirmReservedQuantity(Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
         }
 
-        if (this.quantity < quantityToDeduct) {
-            throw new BadRequestException(
-                    String.format("Insufficient inventory. Available: %d, Requested: %d",
-                            this.quantity, quantityToDeduct)
+        if (reservedStock < quantity) {
+            throw new InsufficientStockException(
+                    String.format("Cannot confirm %d units. Only %d units are reserved.",
+                            quantity, reservedStock)
             );
         }
 
-        // Reduce total quantity
-        this.quantity -= quantityToDeduct;
-
-        // Also reduce reserved quantity if it was previously reserved
-        if (this.reservedQuantity >= quantityToDeduct) {
-            this.reservedQuantity -= quantityToDeduct;
-        } else {
-            // If reserved is less than deduction, set to 0
-            this.reservedQuantity = 0;
-        }
+        reservedStock -= quantity;
     }
 
     /**
-     * Reserve inventory quantity (e.g., when order is placed but not paid)
-     *
-     * @param quantityToReserve Amount to reserve
-     * @throws BadRequestException if insufficient available stock
+     * Reserve quantity for an order - move from available to reserved
      */
-    public void reserveQuantity(Integer quantityToReserve) {
-        if (quantityToReserve == null || quantityToReserve <= 0) {
-            throw new BadRequestException("Reserve quantity must be positive");
+    public void reserveQuantity(Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
         }
 
-        if (getAvailableStock() < quantityToReserve) {
-            throw new BadRequestException(
-                    String.format("Insufficient available stock. Available: %d, Requested: %d",
-                            getAvailableStock(), quantityToReserve)
+        if (availableStock < quantity) {
+            throw new InsufficientStockException(
+                    String.format("Cannot reserve %d units. Only %d units available.",
+                            quantity, availableStock)
             );
         }
 
-        this.reservedQuantity += quantityToReserve;
+        availableStock -= quantity;
+        reservedStock += quantity;
+        updatedAt = LocalDateTime.now();
     }
 
     /**
-     * Release reserved inventory (e.g., when payment fails or order is cancelled)
-     *
-     * @param quantityToRelease Amount to release from reserved
+     * Release reserved quantity - move from reserved back to available
      */
-    public void releaseReservedQuantity(Integer quantityToRelease) {
-        if (quantityToRelease == null || quantityToRelease <= 0) {
-            return; // Silent return for invalid inputs during cleanup
+    public void releaseReservedQuantity(Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
         }
 
-        // Reduce reserved quantity, but don't go below 0
-        this.reservedQuantity = Math.max(0, this.reservedQuantity - quantityToRelease);
+        if (reservedStock < quantity) {
+            throw new InsufficientStockException(
+                    String.format("Cannot release %d units. Only %d units are reserved.",
+                            quantity, reservedStock)
+            );
+        }
+
+        reservedStock -= quantity;
+        availableStock += quantity;
+        updatedAt = LocalDateTime.now();
     }
 
     /**
-     * Add inventory quantity (e.g., restocking)
-     *
-     * @param quantityToAdd Amount to add to inventory
+     * Add quantity to available stock
      */
-    public void addQuantity(Integer quantityToAdd) {
-        if (quantityToAdd == null || quantityToAdd <= 0) {
-            throw new BadRequestException("Add quantity must be positive");
+    public void addQuantity(Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
         }
 
-        this.quantity += quantityToAdd;
+        availableStock += quantity;
+        updatedAt = LocalDateTime.now();
+
+        if (quantity.equals(restockQuantity)) {
+            lastRestocked = LocalDateTime.now();
+        }
+    }
+
+    /**
+     * Check if sufficient stock is available
+     */
+    public boolean hasSufficientStock(Integer requiredQuantity) {
+        if (requiredQuantity == null || requiredQuantity <= 0) {
+            return false;
+        }
+        return availableStock >= requiredQuantity;
     }
 }

@@ -17,29 +17,14 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    /**
-     * Find user by email
-     */
     Optional<User> findByEmail(String email);
 
-    /**
-     * Check if email exists
-     */
     boolean existsByEmail(String email);
 
-    /**
-     * Find users by role
-     */
     Page<User> findByRole(Role role, Pageable pageable);
 
-    /**
-     * Find enabled users only
-     */
     Page<User> findByEnabledTrue(Pageable pageable);
 
-    /**
-     * Search users by name or email
-     */
     @Query("SELECT u FROM User u WHERE " +
             "LOWER(u.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "LOWER(u.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
@@ -55,19 +40,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("endDate") LocalDateTime endDate
     );
 
-    /**
-     * Count users by role
-     */
     long countByRole(Role role);
 
-    /**
-     * Count active users
-     */
     long countByEnabledTrue();
 
-    /**
-     * Find users by role and enabled status
-     */
     @Query("SELECT u FROM User u WHERE u.role = :role AND u.enabled = :isEnabled")
     Page<User> findByRoleAndEnabled(
             @Param("role") Role role,
@@ -75,16 +51,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
             Pageable pageable
     );
 
-    /**
-     * Update user enabled status
-     */
     @Modifying
     @Query("UPDATE User u SET u.enabled = :isEnabled WHERE u.id = :userId")
     int updateUserEnabledStatus(@Param("userId") Long userId, @Param("isEnabled") boolean isEnabled);
 
-    /**
-     * Find recently registered users
-     */
     @Query("SELECT u FROM User u WHERE u.createdAt >= :since ORDER BY u.createdAt DESC")
     List<User> findRecentlyRegistered(@Param("since") LocalDateTime since);
 }

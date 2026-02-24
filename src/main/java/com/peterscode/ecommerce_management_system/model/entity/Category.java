@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString(exclude = {"parent", "subcategories"})
 @Table(name = "categories", indexes = {
         @Index(name = "idx_category_name", columnList = "name"),
         @Index(name = "idx_category_slug", columnList = "slug"),
@@ -82,21 +84,8 @@ public class Category {
     private LocalDateTime updatedAt;
 
     // Business logic methods
-    public boolean isParentCategory() {
-        return parent == null;
-    }
 
     public boolean hasSubcategories() {
         return subcategories != null && !subcategories.isEmpty();
-    }
-
-    public void incrementProductCount() {
-        this.productCount = (this.productCount == null ? 0L : this.productCount) + 1;
-    }
-
-    public void decrementProductCount() {
-        if (this.productCount != null && this.productCount > 0) {
-            this.productCount--;
-        }
     }
 }

@@ -7,15 +7,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class RateLimitingFilter extends OncePerRequestFilter {
 
@@ -25,14 +22,17 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     private static final String RATE_LIMIT_KEY_PREFIX = "security:ratelimit:";
     private static final int MAX_REQUESTS_PER_MINUTE = 60;
     private static final int MAX_REQUESTS_PER_HOUR = 1000;
+    private static final int MAX_CART_MUTATIONS_PER_MINUTE = 30;
+    private static final int MAX_PAYMENT_REQUESTS_PER_MINUTE = 5;
+    private static final int MAX_SENSITIVE_REQUESTS_PER_MINUTE = 10;
     private static final long MINUTE_IN_SECONDS = 60;
     private static final long HOUR_IN_SECONDS = 3600;
 
     @Override
     protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
     ) throws ServletException, IOException {
 
         String ipAddress = securityUtils.getClientIpAddress(request);
@@ -47,7 +47,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         }
 
         // Apply rate limiting
-        if (!isRateLimitAllowed(ipAddress, path)) {
+        if (!isRateLimitAllowed(ipAddress, path, request)) {
             log.warn("Rate limit exceeded for IP: {} on path: {}", ipAddress, path);
             response.setStatus(429);
             response.setHeader("Retry-After", "60");
@@ -61,7 +61,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     /**
      * Check if request is allowed based on rate limits
      */
-    private boolean isRateLimitAllowed(String ipAddress, String path) {
+    private boolean isRateLimitAllowed(String ipAddress, String path, HttpServletRequest request) {
         // Per-minute rate limit
         String minuteKey = RATE_LIMIT_KEY_PREFIX + "minute:" + ipAddress;
         Long minuteCount = redisTemplate.opsForValue().increment(minuteKey);
@@ -99,13 +99,61 @@ public class RateLimitingFilter extends OncePerRequestFilter {
                 redisTemplate.expire(sensitiveKey, MINUTE_IN_SECONDS, TimeUnit.SECONDS);
             }
 
-            if (sensitiveCount != null && sensitiveCount > 10) { // Max 10 requests per minute for sensitive endpoints
+            if (sensitiveCount != null && sensitiveCount > MAX_SENSITIVE_REQUESTS_PER_MINUTE) {
                 log.warn("Sensitive endpoint rate limit exceeded for IP: {}", ipAddress);
                 return false;
             }
         }
 
+        // Cart mutation rate limiting (prevent cart abuse / bot attacks)
+        if (isCartMutationEndpoint(path, request.getMethod())) {
+            String cartKey = RATE_LIMIT_KEY_PREFIX + "cart:" + ipAddress;
+            Long cartCount = redisTemplate.opsForValue().increment(cartKey);
+
+            if (cartCount != null && cartCount == 1) {
+                redisTemplate.expire(cartKey, MINUTE_IN_SECONDS, TimeUnit.SECONDS);
+            }
+
+            if (cartCount != null && cartCount > MAX_CART_MUTATIONS_PER_MINUTE) {
+                log.warn("Cart mutation rate limit exceeded for IP: {}", ipAddress);
+                return false;
+            }
+        }
+
+        // Payment initiation rate limiting (prevent payment spam)
+        if (isPaymentInitiationEndpoint(path, request.getMethod())) {
+            String paymentKey = RATE_LIMIT_KEY_PREFIX + "payment:" + ipAddress;
+            Long paymentCount = redisTemplate.opsForValue().increment(paymentKey);
+
+            if (paymentCount != null && paymentCount == 1) {
+                redisTemplate.expire(paymentKey, MINUTE_IN_SECONDS, TimeUnit.SECONDS);
+            }
+
+            if (paymentCount != null && paymentCount > MAX_PAYMENT_REQUESTS_PER_MINUTE) {
+                log.warn("Payment initiation rate limit exceeded for IP: {}", ipAddress);
+                return false;
+            }
+        }
+
         return true;
+    }
+
+    /**
+     * Cart mutation endpoints (POST/PUT/DELETE on cart)
+     */
+    private boolean isCartMutationEndpoint(String path, String method) {
+        if (!path.contains("/cart")) return false;
+        return "POST".equalsIgnoreCase(method) ||
+                "PUT".equalsIgnoreCase(method) ||
+                "PATCH".equalsIgnoreCase(method) ||
+                "DELETE".equalsIgnoreCase(method);
+    }
+
+    /**
+     * Payment initiation endpoint
+     */
+    private boolean isPaymentInitiationEndpoint(String path, String method) {
+        return "POST".equalsIgnoreCase(method) && path.contains("/payments/initiate");
     }
 
     /**

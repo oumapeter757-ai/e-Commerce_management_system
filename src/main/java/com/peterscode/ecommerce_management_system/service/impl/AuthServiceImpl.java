@@ -9,7 +9,7 @@ import com.peterscode.ecommerce_management_system.model.dto.response.LoginRespon
 import com.peterscode.ecommerce_management_system.model.dto.response.UserResponse;
 import com.peterscode.ecommerce_management_system.model.dto.request.LoginRequest;
 import com.peterscode.ecommerce_management_system.model.dto.request.RegisterRequest;
-import com.peterscode.ecommerce_management_system.model.entity.TokenType;
+import com.peterscode.ecommerce_management_system.model.enums.TokenType;
 import com.peterscode.ecommerce_management_system.model.entity.User;
 import com.peterscode.ecommerce_management_system.model.entity.VerificationToken;
 import com.peterscode.ecommerce_management_system.model.enums.Role;
@@ -405,12 +405,74 @@ public class AuthServiceImpl implements AuthService {
         log.info("Password reset successfully for user: {}", user.getEmail());
     }
 
+    @Override
+    @Transactional
+    public UserResponse registerFirstAdmin(RegisterRequest request, HttpServletRequest httpRequest) {
+        String ipAddress = securityUtils.getClientIpAddress(httpRequest);
+        log.info("Attempting to initialize system admin from IP: {}", ipAddress);
+
+        // 1. THE LOCK: Check if an Admin already exists
+        long adminCount = userRepository.countByRole(Role.ADMIN);
+
+        if (adminCount > 0) {
+            log.warn("Security Alert: Attempt to overwrite system admin from IP: {}", ipAddress);
+            auditLogService.logSecurityEvent("ADMIN_INIT_BLOCKED", "Attempt to re-initialize admin", ipAddress);
+            throw new BadRequestException("System already initialized. Admin accounts must now be created by an existing Admin.");
+        }
+
+        // 2. Validate Input
+        validateGmailEmail(request.getEmail()); // Ensure this allows your .ac.ke domains
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new BadRequestException("Email is already registered");
+        }
+
+        if (!securityUtils.isPasswordStrong(request.getPassword())) {
+            throw new BadRequestException("Password does not meet security requirements");
+        }
+
+        // 3. Create the Master Admin (DISABLED INITIALLY)
+        User user = userMapper.toEntity(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(Role.ADMIN);
+
+        // SECURE CHANGE: Disable account until email is verified
+        user.setEnabled(false);
+        user.setEmailVerified(false);
+
+        User savedUser = userRepository.save(user);
+
+        // 4. Generate Token & Send Verification Email
+        // If email fails, transaction rolls back so you can try again (prevents lockout)
+        try {
+            String verificationToken = generateAndSaveVerificationToken(savedUser, TokenType.EMAIL_VERIFICATION, ipAddress);
+            emailService.sendVerificationEmail(savedUser.getEmail(), savedUser.getFirstName(), verificationToken);
+        } catch (Exception e) {
+            // CRITICAL: Force rollback if email fails, otherwise system is bricked (Admin exists but can't verify)
+            throw new BadRequestException("Failed to send verification email. Please check your email configuration and try again.");
+        }
+
+        log.info("SYSTEM BOOTSTRAP: First Admin registered (Pending Verification): {}", savedUser.getEmail());
+        auditLogService.logSuccess("SYSTEM_INIT", "SYSTEM", savedUser.getId().toString(),
+                "Initial Admin Account Created - Pending Verification", httpRequest);
+
+        return userMapper.toResponse(savedUser);
+    }
     /**
      * Validate that email is a Gmail address
      */
     private void validateGmailEmail(String email) {
-        if (email == null || !email.toLowerCase().endsWith("@gmail.com")) {
-            throw new BadRequestException("Only @gmail.com email addresses are accepted");
+        if (email == null || email.trim().isEmpty()) {
+            throw new BadRequestException("Email cannot be empty");
+        }
+
+        String lowerEmail = email.toLowerCase().trim();
+
+        // Check for Gmail OR any domain ending in .ac.ke
+        boolean isGmail = lowerEmail.endsWith("@gmail.com");
+        boolean isAcademic = lowerEmail.endsWith(".ac.ke");
+
+        if (!isGmail && !isAcademic) {
+            throw new BadRequestException("Only Gmail and Academic (.ac.ke) email addresses are accepted");
         }
     }
 
